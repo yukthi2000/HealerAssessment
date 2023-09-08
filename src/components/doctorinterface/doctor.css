@@ -1,0 +1,68 @@
+:root {
+    --maincolor: linear-gradient(90deg, rgba(75, 20, 141, 1) 0%, rgba(224, 64, 253, 1) 100%);
+}
+
+.scrollable-column {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.fs-7 {
+    font-size: 0.8rem;
+}
+
+.bg-gray {
+    background-color: #F1F0F0 !important;
+}
+
+.color-gradient {
+    color: var(--maincolor);
+}
+
+.bg-gradident {
+    background-color: var(--maincolor) !important;
+}
+
+.btn-gr {
+    background: linear-gradient(225deg, #E040FD 0%, #4B148D 100%);
+}
+
+.nav-hover {
+    position: relative;
+}
+
+.nav-hover::after {
+    content: '';
+    width: 0;
+    height: 3px;
+    background: var(--maincolor);
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    transition: 0.2s ease-out;
+}
+
+.nav-hover:hover::after {
+    width: 100%;
+}
+
+.icon-hover:hover {
+    color: var(--maincolor) !important;
+    background-color: #F1F0F0;
+    border-radius: 50%;
+}
+
+.btn:hover {
+    opacity: 0.8;
+}
+
+.icon-btn:hover {
+    transform: scale(1.2);
+    transition: 0.2s ease-out;
+}
+
+.btn-gr {
+    border-radius: 10px;
+    background: linear-gradient(225deg, #E040FD 0%, #4B148D 100%);
+    box-shadow: 0px 4px 25px 0px rgba(0, 0, 0, 0.25);
+}
