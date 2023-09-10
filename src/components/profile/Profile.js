@@ -1,17 +1,22 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./Profile.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import logo from "../../assets/logo.png";
 import FeatherIcon from "feather-icons-react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+
 import farhath from "../../assets/farhath.jpg";
 import Avatar from "@mui/material/Avatar";
 import default_dp from "../../assets/default_dp.png";
 
 const Profile = () => {
-
-  const [profilepic,setprofilepic]=useState(default_dp)
+  const [profilepic, setprofilepic] = useState(default_dp);
   const [patients, setpatients] = useState([]);
+  const [id, setid] = useState(2343);
+  const [userdata, setuserdata] = useState([]);
+  const [patientList, setPatientList] = useState([]);
+  const [filteredPatientList, setFilteredPatientList] = useState([]);
 
   const [medicallist, setmedicallist] = useState([
     { No: 1, date: "07-07-2023" },
@@ -22,32 +27,26 @@ const Profile = () => {
   ]);
 
   useEffect(() => {
-    fetchData();
+   fetchData();
   }, []);
 
+
   useEffect(() => {
-    // // Filter the patient list based on ID, Name, and Blood Group filters
-    // const filteredList = patients.filter(
-    //   (patient) =>
-    //     patient.Patient_ID.includes(searchTerm3) &&
-    //     patient.PatientName.toLowerCase().includes(searchTerm4.toLowerCase()) &&
-    //     (selectedBloodGroup === "" || patient.BloodGroup === selectedBloodGroup)
-    // );
-    // setFilteredPatientList(filteredList);
-    console.log(patients);
-  }, []);
+   const patient=patientList.filter((patient)=>patient.Patient_ID.includes("cst20008"))
+  setuserdata(patient);
+  }, [patientList]);
 
   const fetchData = async () => {
     try {
       const response = await axios.get(
         "http://localhost/Healerz/PHP/patient/patientdetails.php"
       );
-      setpatients(response.data);
+      setPatientList(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
+      console.log(error);
     }
   };
-
 
   const onPDFdownload = () => {
     // using Java Script method to get PDF file
@@ -106,8 +105,13 @@ const Profile = () => {
                     src="/static/images/avatar/1.jpg"
                     className="me-2 loginiccontt"
                   /> */}
-                                            <img src={profilepic} alt='avatar' className='rounded-circle me-2 loginiccontt' width='40px' height='40px'/>
-
+                  <img
+                    src={profilepic}
+                    alt="avatar"
+                    className="rounded-circle me-2 loginiccontt"
+                    width="40px"
+                    height="40px"
+                  />
                 </a>
               </li>
             </ul>
@@ -129,39 +133,44 @@ const Profile = () => {
               </div>
               <div></div>
             </div> */}
-            <div className="d-flex  justify-content-center mb-2">
-              <div className="d-flex align-items-center justify-content-center ms-2">
-                <img
-                  src={profilepic}
-                  alt="avatar"
-                  className="rounded-circle me-2"
-                  width="100px"
-                  height="100px"
-                />
-              </div>
+          {userdata.map((data, index) => (
+  <div key={index}>
+    <div className="d-flex justify-content-center mb-2">
+      <div className="d-flex align-items-center justify-content-center ms-2">
+        <img
+          src={profilepic} 
+          alt="avatar"
+          className="rounded-circle me-2"
+          width="100px"
+          height="100px"
+        />
+      </div>
 
-              <div className="d-flex align-items-center justify-content-center">
-                <div>
-                  <h4 className="m-0">Farhath</h4>
-                  <p className="fs-5 m-0">cst20035</p>
-                  <p className="fs-9 m-0"> N0:31, Kandy, Sri Lanka</p>
-                  <p className="fs-10 m-0">0771234567</p>
-                </div>
-              </div>
-            </div>
-            <hr />
-            <div className="info-2">
-              <p info-2>
-                Age <span className="green">22 years</span>
-              </p>
-              <p info-2>Gender Male</p>
-              <p info-2>
-                Blood Group <span className="red">B+</span>{" "}
-              </p>
-              <p info-2>
-                Allergies <span className="blue">No</span>
-              </p>
-            </div>
+      <div className="d-flex align-items-center justify-content-center">
+        <div>
+          <h4 className="m-0">{data.PatientName}</h4> 
+          <p className="fs-5 m-0">{data.Patient_ID}</p> 
+          <p className="fs-9 m-0">{data.Address}</p> 
+          <p className="fs-10 m-0">{data.PhoneNo}</p> 
+        </div>
+      </div>
+    </div>
+    <hr />
+    <div className="info-2">
+      <p info-2>
+        Age <span className="green">{data.age} years</span> 
+      </p>
+      <p info-2>Gender {data.Gender}</p>
+      <p info-2>
+        Blood Group <span className="red">{data.BloodGroup}</span>{" "}
+      </p>
+      <p info-2>
+        Allergies <span className="blue">{data.SpecialDisease}</span> 
+      </p>
+    </div>
+  </div>
+))}
+
 
             <div className="specialDisease">
               <h6>Special Disease</h6>
