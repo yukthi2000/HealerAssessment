@@ -74,7 +74,12 @@ export default function Hnav() {
             </li>
             <li className="nav-item" style={{ paddingLeft: "30px" }}>
               <a className="nav-link nav-hover " href="/login">
-                <FeatherIcon icon="user" className="me-2 loginiccon" />
+                {/* <FeatherIcon icon="user" className="me-2 loginiccon" /> */}
+                <Avatar
+                    alt="Remy Sharp"
+                    src="/static/images/avatar/1.jpg"
+                    className="me-2 loginiccontt"
+                  />
               </a>
             </li>
           </ul>

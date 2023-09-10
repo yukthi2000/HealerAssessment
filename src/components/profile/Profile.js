@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import "./Profile.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import logo from "../../assets/logo.png";
 import FeatherIcon from "feather-icons-react";
 import { Link } from "react-router-dom";
 import farhath from "../../assets/farhath.jpg";
+import Avatar from "@mui/material/Avatar";
+import default_dp from "../../assets/default_dp.png";
 
 const Profile = () => {
+
+  const [profilepic,setprofilepic]=useState(default_dp)
+  const [patients, setpatients] = useState([]);
+
   const [medicallist, setmedicallist] = useState([
     { No: 1, date: "07-07-2023" },
     { No: 2, date: "07-04-2023" },
@@ -15,20 +21,48 @@ const Profile = () => {
     { No: 5, date: "07-11-2021" },
   ]);
 
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    // // Filter the patient list based on ID, Name, and Blood Group filters
+    // const filteredList = patients.filter(
+    //   (patient) =>
+    //     patient.Patient_ID.includes(searchTerm3) &&
+    //     patient.PatientName.toLowerCase().includes(searchTerm4.toLowerCase()) &&
+    //     (selectedBloodGroup === "" || patient.BloodGroup === selectedBloodGroup)
+    // );
+    // setFilteredPatientList(filteredList);
+    console.log(patients);
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost/Healerz/PHP/patient/patientdetails.php"
+      );
+      setpatients(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+
   const onPDFdownload = () => {
     // using Java Script method to get PDF file
-    fetch('sample.pdf').then(response => {
-        response.blob().then(blob => {
-            // Creating new object of PDF file
-            const fileURL = window.URL.createObjectURL(blob);
-            // Setting various property values
-            let alink = document.createElement('a');
-            alink.href = fileURL;
-            alink.download = 'CST20008.pdf';
-            alink.click();
-        })
-    })
-}
+    fetch("sample.pdf").then((response) => {
+      response.blob().then((blob) => {
+        // Creating new object of PDF file
+        const fileURL = window.URL.createObjectURL(blob);
+        // Setting various property values
+        let alink = document.createElement("a");
+        alink.href = fileURL;
+        alink.download = "CST20008.pdf";
+        alink.click();
+      });
+    });
+  };
   return (
     <div>
       <nav
@@ -66,7 +100,14 @@ const Profile = () => {
               </li>
               <li className="nav-item" style={{ paddingLeft: "30px" }}>
                 <a className="nav-link nav-hover " href="/login">
-                  <FeatherIcon icon="user" className="me-2 loginiccontt" />
+                  {/* <FeatherIcon icon="user" className="me-2 loginiccontt" /> */}
+                  {/* <Avatar
+                    alt="Remy Sharp"
+                    src="/static/images/avatar/1.jpg"
+                    className="me-2 loginiccontt"
+                  /> */}
+                                            <img src={profilepic} alt='avatar' className='rounded-circle me-2 loginiccontt' width='40px' height='40px'/>
+
                 </a>
               </li>
             </ul>
@@ -91,7 +132,7 @@ const Profile = () => {
             <div className="d-flex  justify-content-center mb-2">
               <div className="d-flex align-items-center justify-content-center ms-2">
                 <img
-                  src={farhath}
+                  src={profilepic}
                   alt="avatar"
                   className="rounded-circle me-2"
                   width="100px"
@@ -153,7 +194,10 @@ const Profile = () => {
                         {" "}
                         <Link to="/profile">
                           <div className="button">
-                            <button className="btn shadow gradient-buttonnn" onClick={onPDFdownload}>
+                            <button
+                              className="btn shadow gradient-buttonnn"
+                              onClick={onPDFdownload}
+                            >
                               Download
                             </button>
                           </div>
