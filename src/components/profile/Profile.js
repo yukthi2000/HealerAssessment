@@ -3,20 +3,41 @@ import "./Profile.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import logo from "../../assets/logo.png";
 import FeatherIcon from "feather-icons-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
 
 import farhath from "../../assets/farhath.jpg";
 import Avatar from "@mui/material/Avatar";
 import default_dp from "../../assets/default_dp.png";
+import AgeCalculator from "../doctorinterface/algorithms/AgeCalculator";
 
 const Profile = () => {
   const [profilepic, setprofilepic] = useState(default_dp);
   const [patients, setpatients] = useState([]);
+  const [specialDisease, setspecialDisease] = useState("");
   const [id, setid] = useState(2343);
   const [userdata, setuserdata] = useState([]);
   const [patientList, setPatientList] = useState([]);
   const [filteredPatientList, setFilteredPatientList] = useState([]);
+  const [editedPhoneNo, setEditedPhoneNo] = useState("");
+  const [editedAddress, setEditedAddress] = useState("");
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      const username = userdata.map((data) => data.PatientName);
+
+      const newFileName = `${file.name}_${username}`;
+
+      const formData = new FormData();
+      formData.append("file", file, newFileName);
+
+      setprofilepic(URL.createObjectURL(file));
+
+      //table eke hadapan profile pic eka
+    }
+  };
 
   const [medicallist, setmedicallist] = useState([
     { No: 1, date: "07-07-2023" },
@@ -27,13 +48,14 @@ const Profile = () => {
   ]);
 
   useEffect(() => {
-   fetchData();
+    fetchData();
   }, []);
 
-
   useEffect(() => {
-   const patient=patientList.filter((patient)=>patient.Patient_ID.includes("cst20008"))
-  setuserdata(patient);
+    const patient = patientList.filter((patient) =>
+      patient.Patient_ID.includes("cst20008")
+    );
+    setuserdata(patient);
   }, [patientList]);
 
   const fetchData = async () => {
@@ -133,54 +155,51 @@ const Profile = () => {
               </div>
               <div></div>
             </div> */}
-          {userdata.map((data, index) => (
-  <div key={index}>
-    <div className="d-flex justify-content-center mb-2">
-      <div className="d-flex align-items-center justify-content-center ms-2">
-        <img
-          src={profilepic} 
-          alt="avatar"
-          className="rounded-circle me-2"
-          width="100px"
-          height="100px"
-        />
-      </div>
+            {userdata.map((data, index) => (
+              <div key={index}>
+                <div className="d-flex justify-content-center mb-2">
+                  <div className="d-flex align-items-center justify-content-center ms-2">
+                    <img
+                      src={profilepic}
+                      alt="avatar"
+                      className="rounded-circle me-2"
+                      width="100px"
+                      height="100px"
+                    />
+                  </div>
 
-      <div className="d-flex align-items-center justify-content-center">
-        <div>
-          <h4 className="m-0">{data.PatientName}</h4> 
-          <p className="fs-5 m-0">{data.Patient_ID}</p> 
-          <p className="fs-9 m-0">{data.Address}</p> 
-          <p className="fs-10 m-0">{data.PhoneNo}</p> 
-        </div>
-      </div>
-    </div>
-    <hr />
-    <div className="info-2">
-      <p info-2>
-        Age <span className="green">{data.age} years</span> 
-      </p>
-      <p info-2>Gender {data.Gender}</p>
-      <p info-2>
-        Blood Group <span className="red">{data.BloodGroup}</span>{" "}
-      </p>
-      <p info-2>
-        Allergies <span className="blue">{data.SpecialDisease}</span> 
-      </p>
-    </div>
-  </div>
-))}
-
+                  <div className="d-flex align-items-center justify-content-center">
+                    <div>
+                      <h4 className="m-0">{data.PatientName}</h4>
+                      <p className="fs-5 m-0">{data.Patient_ID}</p>
+                      <p className="fs-9 m-0">{data.Address}</p>
+                      <p className="fs-10 m-0">{data.PhoneNo}</p>
+                    </div>
+                  </div>
+                </div>
+                <hr />
+                <div className="info-2">
+                  <p info-2>
+                    Age{" "}
+                    <span className="green">
+                      <AgeCalculator dateOfBirth={data.DateOfBirth} /> years
+                    </span>
+                  </p>
+                  <p info-2>Gender {data.Gender}</p>
+                  <p info-2>
+                    Blood Group <span className="red">{data.BloodGroup}</span>{" "}
+                  </p>
+                  <p info-2>
+                    Allergies{" "}
+                    <span className="blue">{data.SpecialDisease}</span>
+                  </p>
+                </div>
+              </div>
+            ))}
 
             <div className="specialDisease">
               <h6>Special Disease</h6>
-              <p>
-                "Technophobia Virus" or "Technophobia Syndrome": This fictional
-                disease is often portrayed in comedic settings where individuals
-                exhibit an irrational fear or aversion to technology. It can
-                lead to humorous situations as characters struggle to cope with
-                modern devices and advancements.
-              </p>
+              <p>{userdata.map((data) => data.SpecialDisease)}</p>
             </div>
             <hr />
             <br />
@@ -278,53 +297,73 @@ const Profile = () => {
                       <div className="sub-row">
                         <h5>Edit Profile</h5>
                       </div>
-
-                      <div className="personalInfo">
-                        <div className="form-floating">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="floatingPassword"
-                            placeholder="New Password"
-                            style={{ width: "100%" }}
-                          />
-                          <label htmlFor="floatingPassword">
-                            Change PhoneNo
-                          </label>
+                      {userdata.map((data, index) => (
+                        <div className="personalInfo">
+                          <div className="form-floating">
+                            <input
+                              type="text"
+                              className="form-control"
+                              id="floatingPassword"
+                              placeholder="New Password"
+                              style={{ width: "100%" }}
+                              value={editedPhoneNo || data.PhoneNo}
+                              onChange={(e) => setEditedPhoneNo(e.target.value)}
+                            />
+                            <label htmlFor="floatingPassword">
+                              Change PhoneNo
+                            </label>
+                          </div>
+                          <br />
+                          <div className="form-floating">
+                            <textarea
+                              type="text"
+                              className="form-control"
+                              id="floatingPassword"
+                              placeholder="New Password"
+                              style={{ width: "100%" }}
+                              value={editedAddress || data.Address}
+                              onChange={(e) => {
+                                setEditedAddress(e.target.value);
+                              }}
+                            />
+                            <label htmlFor="floatingPassword">
+                              Change Address
+                            </label>
+                          </div>
+                          <br />
+                          <div className="form-floating">
+                            <input
+                              type="file"
+                              className="form-control"
+                              accept=".jpg, .jpeg, .png"
+                              id="floatingPassword"
+                              placeholder="Change Profile pic"
+                              style={{ width: "100%" }}
+                              onChange={handleFileUpload}
+                            />
+                            <label htmlFor="floatingPassword">
+                              Change profile pic
+                            </label>
+                          </div>
+                          <hr />
+                          <div className="button">
+                            <button
+                              className="btn shadow gradient-button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                const updatedUserdata = [...userdata];
+                                updatedUserdata.PhoneNo =
+                                  editedPhoneNo || data.PhoneNo;
+                                updatedUserdata.Address =
+                                  editedAddress || data.Address;
+                                setuserdata(updatedUserdata);
+                              }}
+                            >
+                              Save changes{" "}
+                            </button>
+                          </div>
                         </div>
-                        <br />
-                        <div className="form-floating">
-                          <textarea
-                            type="text"
-                            className="form-control"
-                            id="floatingPassword"
-                            placeholder="New Password"
-                            style={{ width: "100%" }}
-                          />
-                          <label htmlFor="floatingPassword">
-                            Change Address
-                          </label>
-                        </div>
-                        <br />
-                        <div className="form-floating">
-                          <input
-                            type="file"
-                            className="form-control"
-                            id="floatingPassword"
-                            placeholder="Change Profile pic"
-                            style={{ width: "100%" }}
-                          />
-                          <label htmlFor="floatingPassword">
-                            Change profile pic
-                          </label>
-                        </div>
-                        <hr />
-                        <div className="button">
-                          <button className="btn shadow gradient-button">
-                            Save changes{" "}
-                          </button>
-                        </div>
-                      </div>
+                      ))}
                     </div>
 
                     <div className="column-2">
