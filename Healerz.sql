@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 08, 2023 at 06:54 PM
+-- Generation Time: Sep 10, 2023 at 04:10 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -191,6 +191,13 @@ CREATE TABLE `medicalrecord` (
   `Prescription_ID` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `medicalrecord`
+--
+
+INSERT INTO `medicalrecord` (`MedicalRecord_ID`, `Patient_ID`, `Doctor_ID`, `DateandTime`, `Patientcomplaint`, `OnExamination`, `Tests`, `Confirmeddiagnosis`, `Prescription_ID`) VALUES
+(6, 'cst20008', 'D001', '2023-09-10 19:14:30', 'drg', 'ert', 'erg', 'ergr', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -250,7 +257,8 @@ CREATE TABLE `patient` (
 INSERT INTO `patient` (`ID`, `Patient_ID`, `PatientName`, `DateOfBirth`, `Gender`, `PhoneNo`, `Email`, `Address`, `BloodGroup`, `Password`, `Profile`, `SpecialDisease`) VALUES
 (24, '2343', 'cvxc', '2023-09-05', 'Male', 760072186, 'powsipowsihan07@gmail.com', '33/8 ,Rajeswari Road,Nayanmarkaddu', 'B+', 'cxvxc', NULL, NULL),
 (26, '3243', 'dsf', '2023-09-04', 'Male', 760072186, 'powsipowsihan07@gmail.com', '33/8 ,Rajeswari Road,Nayanmarkaddu', 'A+', 'asd', NULL, NULL),
-(27, 'cst20008', 'asd', '2023-09-05', 'Male', 0, 'asd', 'sadsa', 'A-', 'sad', NULL, NULL);
+(27, 'cst20008', 'asd', '2023-09-05', 'Male', 0, 'asd', 'sadsa', 'A-', 'sad', NULL, NULL),
+(30, 'cst20061', 'Pradishan', '2000-08-31', 'male', 774057922, 'k.pradeeshan4@gmail.com', 'sri lanka', 'B+', 'sha', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -285,11 +293,11 @@ INSERT INTO `pharmacist` (`Pharmacist_ID`, `Pharmacist_Name`, `Designation`, `Em
 
 CREATE TABLE `prescription_list` (
   `Prescription_list_ID` int(11) NOT NULL,
-  `Prescription_ID` int(11) NOT NULL,
+  `Prescription_ID` int(11) DEFAULT NULL,
   `Patient_ID` varchar(30) NOT NULL,
   `Drug_ID` varchar(30) NOT NULL,
   `Doctor_ID` varchar(30) NOT NULL,
-  `Pharmacist_ID` varchar(30) NOT NULL,
+  `Pharmacist_ID` varchar(30) DEFAULT NULL,
   `TDS` varchar(10) NOT NULL,
   `Time` varchar(50) NOT NULL,
   `Days` int(10) NOT NULL
@@ -305,9 +313,9 @@ CREATE TABLE `prescription_record` (
   `Prescription_ID` int(11) NOT NULL,
   `Patient_ID` varchar(30) NOT NULL,
   `Doctor_ID` varchar(30) NOT NULL,
-  `Pharmacist_ID` varchar(30) NOT NULL,
+  `Pharmacist_ID` varchar(30) DEFAULT NULL,
   `status` varchar(50) NOT NULL,
-  `Time` datetime NOT NULL
+  `TimeP` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -442,13 +450,19 @@ ALTER TABLE `druginventory`
 -- AUTO_INCREMENT for table `medicalrecord`
 --
 ALTER TABLE `medicalrecord`
-  MODIFY `MedicalRecord_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `MedicalRecord_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `patient`
 --
 ALTER TABLE `patient`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+
+--
+-- AUTO_INCREMENT for table `prescription_list`
+--
+ALTER TABLE `prescription_list`
+  MODIFY `Prescription_list_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `prescription_record`
