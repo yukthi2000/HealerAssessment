@@ -68,11 +68,11 @@ export default function Home() {
 
 
       <div className="container" id='aboutus'>
-        <div class="row mt-5 p-5 row1">
-          <div class="col">
+        <div className="row mt-5 p-5 row1">
+          <div className="col">
             <img src={logo} alt="HealerZ" height='200px' style={{ marginTop: '180px' }} />
           </div>
-          <div class="col">
+          <div className="col">
             <h2 className='serhed'> ABOUT US</h2>
             <p> The mission is to create a user-friendly University medical system that connects individuals with care,
               streamlines medical requests, enhances communication, and fosters community.

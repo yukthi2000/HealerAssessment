@@ -58,7 +58,7 @@
 .close-btn-container {
     border-radius: 6px 0px 0px 6px;
     border: 1px solid #D1D1D1;
-    justify-content: end;
+    justify-content: flex-end;
     margin-left: auto;
     display: flex;
     width: min-content;
