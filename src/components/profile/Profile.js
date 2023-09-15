@@ -21,22 +21,28 @@ const Profile = () => {
   const [filteredPatientList, setFilteredPatientList] = useState([]);
   const [editedPhoneNo, setEditedPhoneNo] = useState("");
   const [editedAddress, setEditedAddress] = useState("");
+  const [editedProfilePic, setEditedProfilePic] = useState(null);
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
+  const handleProfileUpdate = () => {
+    const formData = new FormData()
+    formData.append("Patient_ID", id);
+    formData.append("PhoneNo", editedPhoneNo);
+    formData.append("Address", editedAddress);
 
-    if (file) {
-      const username = userdata.map((data) => data.PatientName);
-
-      const newFileName = `${file.name}_${username}`;
-
-      const formData = new FormData();
-      formData.append("file", file, newFileName);
-
-      setprofilepic(URL.createObjectURL(file));
-
-      //table eke hadapan profile pic eka
+    if (editedProfilePic) {
+      formData.append("profilePic", editedProfilePic);
     }
+
+    console.log(formData);
+    axios
+      .put("http://localhost/HealerZ/PHP/patient/updateProfile.php", formData)
+      .then((res) => {
+        console.log(res);
+        res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const [medicallist, setmedicallist] = useState([
@@ -336,12 +342,14 @@ const Profile = () => {
                               type="file"
                               className="form-control"
                               accept=".jpg, .jpeg, .png"
-                              id="floatingPassword"
+                              id="profilePic"
                               placeholder="Change Profile pic"
                               style={{ width: "100%" }}
-                              onChange={handleFileUpload}
+                              onChange={(e) =>
+                                setEditedProfilePic(e.target.files[0])
+                              }
                             />
-                            <label htmlFor="floatingPassword">
+                            <label htmlFor="ProfilePic">
                               Change profile pic
                             </label>
                           </div>
@@ -357,6 +365,7 @@ const Profile = () => {
                                 updatedUserdata.Address =
                                   editedAddress || data.Address;
                                 setuserdata(updatedUserdata);
+                                handleProfileUpdate();
                               }}
                             >
                               Save changes{" "}
