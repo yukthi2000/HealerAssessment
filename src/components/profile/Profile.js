@@ -21,6 +21,7 @@ const Profile = () => {
   const [filteredPatientList, setFilteredPatientList] = useState([]);
   const [editedPhoneNo, setEditedPhoneNo] = useState("");
   const [editedAddress, setEditedAddress] = useState("");
+  const [editedAllDiseases, setEditedAllDiseases] = useState("");
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -180,17 +181,17 @@ const Profile = () => {
                 <hr />
                 <div className="info-2">
                   <p info-2>
-                    Age{" "}
+                    Age :{" "}
                     <span className="green">
                       <AgeCalculator dateOfBirth={data.DateOfBirth} /> years
                     </span>
                   </p>
-                  <p info-2>Gender {data.Gender}</p>
+                  <p info-2>Gender : {data.Gender}</p>
                   <p info-2>
-                    Blood Group <span className="red">{data.BloodGroup}</span>{" "}
+                    Blood Group : <span className="red">{data.BloodGroup}</span>{" "}
                   </p>
                   <p info-2>
-                    Allergies{" "}
+                    Allergies :{" "}
                     <span className="blue">{data.SpecialDisease}</span>
                   </p>
                 </div>
@@ -436,8 +437,9 @@ const Profile = () => {
                         className="form-control"
                         id="diseases"
                         placeholder="Confirm Password"
-                        // style={{ width: "100%" }}
+                        value={userdata.map((data) => data.SpecialDisease) || editedAllDiseases}
                         rows={7}
+                        onChange={(e)=>setEditedAllDiseases(e.target.value)}
                       ></textarea>
                       <label htmlFor="floatingPassword">
                         Specific Diseases
@@ -446,7 +448,14 @@ const Profile = () => {
                   </div>
                   <hr />
                   <div className="button">
-                    <button className="btn shadow gradient-button">
+                    <button className="btn shadow gradient-button"  onClick={(e) => {
+                                e.preventDefault();
+                                const updatedUserdata = [...userdata];
+                                updatedUserdata.SpecialDisease =
+                                  editedAllDiseases || data.SpecialDisease;
+                           
+                                setuserdata(updatedUserdata);
+                              }}>
                       Save Changes
                     </button>
                   </div>
