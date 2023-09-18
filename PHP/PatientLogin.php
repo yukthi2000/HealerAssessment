@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
 
-    echo json_encode(array("message" => "Login successful."));
+    echo json_encode(array("message" => "Login successful.","patientID" => $patientID));
 
 } else {
     echo json_encode(array("message" => "Method not allowed."));
