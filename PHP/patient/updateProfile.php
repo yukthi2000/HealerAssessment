@@ -21,30 +21,60 @@ try {
         throw new Exception('User_ID is not provided in the request.'+$data);
     }
 
-    $stmt = $conn->prepare("UPDATE patient SET PhoneNo = :PhoneNo, Address = :Address WHERE Patient_ID = :Patient_ID");
+    $stmt = $conn->prepare("UPDATE patient SET PhoneNo = :PhoneNo, Address = :Address ,SpecialDisease= :SpecialDisease WHERE Patient_ID = :Patient_ID");
     $stmt->bindValue(':Patient_ID', $data['Patient_ID']);
     $stmt->bindValue(':PhoneNo', $data['PhoneNo']);
     $stmt->bindValue(':Address', $data['Address']);
+    $stmt->bindValue(':SpecialDisease', $data['SpecialDisease']);
+
 
     $stmt->execute();
     $rowCount = $stmt->rowCount();
     if ($rowCount > 0) {
         echo json_encode(array('message' => 'Profile details updated successfully'));
     } else {
-        echo json_encode(array('error' => 'Patient details not found'));
+        echo 'Patient details not found';
     }
 
-    if (isset($_FILES['profilePic']) && $rowCount > 0) {
-        $target_dir = "profile/";
-        $target_file = $target_dir . basename($_FILES["profilePic"]["name"]);
-        $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-
+    if (isset($_FILES['Profile']) && $_FILES['Profile']['error'] === UPLOAD_ERR_OK) {
+        $target_dir = "profile/users_pic/";
+        $target_file = $target_dir . basename($_FILES["Profile"]["name"]);
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+    
         if (move_uploaded_file($_FILES["Profile"]["tmp_name"], $target_file)) {
+            $imageLink = $target_file;
+            $stmt = $conn->prepare("UPDATE patient SET profile = :profile WHERE Patient_ID = :Patient_ID");
+            $stmt->bindValue(':Patient_ID', $data['Patient_ID']);
+            $stmt->bindValue(':profile', $imageLink);
+            $stmt->execute();
             echo json_encode(array('message' => 'Profile picture uploaded successfully'));
         } else {
             echo json_encode(array('error' => 'Sorry, there was an error uploading your file.'));
         }
+    } else {
+        echo 'No file uploaded';
     }
+    
+
+    // if (isset($_FILES['Profile']) ) {
+    //     $target_dir = "profile/users_pic/";
+    //     $target_file = $target_dir . basename($_FILES["Profile"]["name"]);
+    //     $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+
+    //     if (move_uploaded_file($_FILES["Profile"]["tmp_name"], $target_file)) {
+    //         $imageLink =  $target_file; 
+    //         $stmt = $conn->prepare("UPDATE patient SET profile = :profile WHERE Patient_ID = :Patient_ID");
+    //         $stmt->bindValue(':Patient_ID', $data['Patient_ID']);
+    //         $stmt->bindValue(':profile', $imageLink);
+    //         $stmt->execute();
+    //         echo json_encode(array('message' => 'Profile picture uploaded successfully'));
+    //     } else {
+    //         echo json_encode(array('error' => 'Sorry, there was an error uploading your file.'));
+    //     }
+    // }
+    // else{
+    //     echo json_encode(array('error' => 'No file uploaded'));
+    // }
 
 
     

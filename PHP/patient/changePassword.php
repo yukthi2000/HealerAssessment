@@ -1,10 +1,12 @@
 <?php
-require './classes/DBconnector.php';
-use classes\DBconnector;
 
-header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: http://localhost:3000");
 header("Access-Control-Allow-Methods: PUT");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
+
+require '../classes/DBconnector.php';
+use classes\DBconnector;
+
 
 $con = new DBconnector();
 $conn = $con->getConnection();
@@ -21,6 +23,7 @@ try {
     }
 
     $stmt = $conn->prepare("UPDATE patient SET Password = :Password WHERE Patient_ID = :Patient_ID");
+    $stmt->bindValue(':Patient_ID', $data['Patient_ID']);
     $stmt->bindValue(':Password', $data['Password']);
 
     $stmt->execute();

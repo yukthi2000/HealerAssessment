@@ -5,7 +5,7 @@ import logo from "../../assets/logo.png";
 import FeatherIcon from "feather-icons-react";
 import { Link, useSearchParams } from "react-router-dom";
 import axios from "axios";
-
+import { toast, ToastContainer } from "react-toastify";
 import farhath from "../../assets/farhath.jpg";
 import Avatar from "@mui/material/Avatar";
 import default_dp from "../../assets/default_dp.png";
@@ -23,36 +23,9 @@ const Profile = () => {
   const [editedAddress, setEditedAddress] = useState("");
   const [editedAllDiseases, setEditedAllDiseases] = useState("");
   const [editedProfilePic, setEditedProfilePic] = useState(null);
-
-  const handleProfileUpdate = () => {
-    const formData = new FormData()
-    formData.append("Patient_ID", id);
-    formData.append("PhoneNo", editedPhoneNo);
-    formData.append("Address", editedAddress);
-
-    if (editedProfilePic) {
-      formData.append("profilePic", editedProfilePic);
-    }
-
-    console.log(formData);
-    axios
-      .put("http://localhost/HealerZ/PHP/patient/updateProfile.php", formData)
-      .then((res) => {
-        console.log(res);
-        res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const [medicallist, setmedicallist] = useState([
-    { No: 1, date: "07-07-2023" },
-    { No: 2, date: "07-04-2023" },
-    { No: 3, date: "07-06-2022" },
-    { No: 4, date: "07-04-2022" },
-    { No: 5, date: "07-11-2021" },
-  ]);
+  const [currpw, setcurrpw] = useState();
+  const [changepw, setchangepw] = useState();
+  const [confirmpw, setconfirmpw] = useState();
 
   useEffect(() => {
     fetchData();
@@ -76,6 +49,79 @@ const Profile = () => {
       console.log(error);
     }
   };
+
+  const passwordchange = () => {
+    if (currpw === userdata.map((data) => data.Password)[0]) {
+      if (changepw === confirmpw) {
+        const tempuserdata = [...userdata];
+        tempuserdata[0].Password = changepw;
+        setuserdata(tempuserdata);
+        console.log(userdata[0]);
+        axios
+          .put(
+            "http://localhost/HealerZ/PHP/patient/changePassword.php",
+            userdata[0]
+          )
+          .then((res) => {
+            console.log(res);
+            toast.success("Password Change Completed");
+            window.location.reload();
+            // res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        toast.error("Wrong Confirm Password !");
+      }
+    } else {
+      toast.error("Wrong Current Password !");
+    }
+  };
+  const handleProfileUpdate = () => {
+    // const formData = new FormData()
+    // formData.append("Patient_ID", id);
+    // formData.append("PhoneNo", editedPhoneNo);
+    // formData.append("Address", editedAddress);
+    // formData.append("SpecialDisease", editedAllDiseases);
+
+    console.log(userdata);
+    // if (editedProfilePic) {
+
+    // }
+    if (userdata[0].PhoneNo.length !== 10) {
+      toast.error("Invalid Phone Number");
+    }
+
+    else{console.log(userdata[0]);
+    axios
+      .put(
+        "http://localhost/HealerZ/PHP/patient/updateProfile.php",
+        userdata[0]
+      )
+      .then((res) => {
+        console.log(res);
+        if (res.data === "Patient details not foundNo file uploaded") {
+          toast.error("No any Changes");
+        }else{
+          toast.success("Changes Modified");
+            window.location.reload();
+        }
+
+        // res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
+      })
+      .catch((err) => {
+        console.log(err);
+      });}
+  };
+
+  const [medicallist, setmedicallist] = useState([
+    { No: 1, date: "07-07-2023" },
+    { No: 2, date: "07-04-2023" },
+    { No: 3, date: "07-06-2022" },
+    { No: 4, date: "07-04-2022" },
+    { No: 5, date: "07-11-2021" },
+  ]);
 
   const onPDFdownload = () => {
     // using Java Script method to get PDF file
@@ -297,7 +343,7 @@ const Profile = () => {
             <br />
             <div className="form-container">
               <h3 className="serhed6">Edit Profile Details</h3>
-              <form id="editProfileForm">
+              <form id="editProfileForm" encType="multipart/form-data">
                 <div className="container">
                   <div className="column-container">
                     <div className="column-1">
@@ -308,13 +354,26 @@ const Profile = () => {
                         <div className="personalInfo">
                           <div className="form-floating">
                             <input
-                              type="text"
+                              type="number"
                               className="form-control"
                               id="floatingPassword"
                               placeholder="New Password"
                               style={{ width: "100%" }}
                               value={editedPhoneNo || data.PhoneNo}
-                              onChange={(e) => setEditedPhoneNo(e.target.value)}
+                              onChange={(e) => {
+                                // if (e.target.value.length > 10 ) {
+                                //   toast.error("Invalid Phone Number");
+                                // } else {
+                                setEditedPhoneNo(e.target.value);
+                                console.log(e.target.value);
+                                const updatedUserdata = [...userdata];
+                                // console.log(updatedUserdata[0]);
+                                updatedUserdata[0].PhoneNo =
+                                  e.target.value || data.PhoneNo;
+                                setuserdata(updatedUserdata);
+                                // console.log(updatedUserdata);
+                                // }
+                              }}
                             />
                             <label htmlFor="floatingPassword">
                               Change PhoneNo
@@ -331,6 +390,10 @@ const Profile = () => {
                               value={editedAddress || data.Address}
                               onChange={(e) => {
                                 setEditedAddress(e.target.value);
+                                const updatedUserdata = [...userdata];
+                                updatedUserdata[0].Address =
+                                  e.target.value || data.Address;
+                                setuserdata(updatedUserdata);
                               }}
                             />
                             <label htmlFor="floatingPassword">
@@ -341,14 +404,18 @@ const Profile = () => {
                           <div className="form-floating">
                             <input
                               type="file"
+                              name="Profile"
                               className="form-control"
                               accept=".jpg, .jpeg, .png"
                               id="profilePic"
                               placeholder="Change Profile pic"
                               style={{ width: "100%" }}
-                              onChange={(e) =>
-                                setEditedProfilePic(e.target.files[0])
-                              }
+                              onChange={(e) => {
+                                setEditedProfilePic(e.target.files[0]);
+                                const tempuserdata = [...userdata];
+                                tempuserdata[0].Profile = e.target.files[0];
+                                setuserdata(tempuserdata);
+                              }}
                             />
                             <label htmlFor="ProfilePic">
                               Change profile pic
@@ -360,12 +427,8 @@ const Profile = () => {
                               className="btn shadow gradient-button"
                               onClick={(e) => {
                                 e.preventDefault();
-                                const updatedUserdata = [...userdata];
-                                updatedUserdata.PhoneNo =
-                                  editedPhoneNo || data.PhoneNo;
-                                updatedUserdata.Address =
-                                  editedAddress || data.Address;
-                                setuserdata(updatedUserdata);
+
+                                // console.log(userdata);
                                 handleProfileUpdate();
                               }}
                             >
@@ -388,6 +451,9 @@ const Profile = () => {
                             className="form-control"
                             id="floatingPassword"
                             placeholder="Current Password"
+                            onChange={(e) => {
+                              setcurrpw(e.target.value);
+                            }}
                             style={{ width: "100%" }}
                           />
                           <label htmlFor="floatingPassword">
@@ -401,6 +467,9 @@ const Profile = () => {
                             className="form-control"
                             id="floatingPassword"
                             placeholder="New Password"
+                            onChange={(e) => {
+                              setchangepw(e.target.value);
+                            }}
                             style={{ width: "100%" }}
                           />
                           <label htmlFor="floatingPassword">New Password</label>
@@ -412,6 +481,9 @@ const Profile = () => {
                             className="form-control"
                             id="floatingPassword"
                             placeholder="Confirm Password"
+                            onChange={(e) => {
+                              setconfirmpw(e.target.value);
+                            }}
                             style={{ width: "100%" }}
                           />
                           <label htmlFor="floatingPassword">
@@ -420,7 +492,14 @@ const Profile = () => {
                         </div>
                         <hr />
                         <div className="button">
-                          <button className="btn shadow gradient-button">
+                          <button
+                            className="btn shadow gradient-button"
+                            onClick={(e) => {
+                              e.preventDefault();
+
+                              passwordchange();
+                            }}
+                          >
                             Save changes{" "}
                           </button>
                         </div>
@@ -446,9 +525,19 @@ const Profile = () => {
                         className="form-control"
                         id="diseases"
                         placeholder="Confirm Password"
-                        value={userdata.map((data) => data.SpecialDisease) || editedAllDiseases}
+                        value={
+                          userdata.map((data) => data.SpecialDisease) ||
+                          editedAllDiseases
+                        }
                         rows={7}
-                        onChange={(e)=>setEditedAllDiseases(e.target.value)}
+                        onChange={(e) => {
+                          setEditedAllDiseases(e.target.value);
+                          const updatedUserdata = [...userdata];
+                          updatedUserdata[0].SpecialDisease =
+                            e.target.value || data.SpecialDisease;
+
+                          setuserdata(updatedUserdata);
+                        }}
                       ></textarea>
                       <label htmlFor="floatingPassword">
                         Specific Diseases
@@ -457,14 +546,14 @@ const Profile = () => {
                   </div>
                   <hr />
                   <div className="button">
-                    <button className="btn shadow gradient-button"  onClick={(e) => {
-                                e.preventDefault();
-                                const updatedUserdata = [...userdata];
-                                updatedUserdata.SpecialDisease =
-                                  editedAllDiseases || data.SpecialDisease;
-                           
-                                setuserdata(updatedUserdata);
-                              }}>
+                    <button
+                      className="btn shadow gradient-button"
+                      onClick={(e) => {
+                        e.preventDefault();
+
+                        handleProfileUpdate();
+                      }}
+                    >
                       Save Changes
                     </button>
                   </div>
@@ -475,6 +564,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };
