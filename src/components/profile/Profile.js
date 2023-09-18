@@ -67,6 +67,23 @@ const Profile = () => {
       });
     });
   };
+
+  const handleAddMedicalRequest = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    formData.append("patientID", sessionStorage.getItem("patientID"));
+    const data = Object.fromEntries(formData);
+    console.log(data);
+    const response = await axios.post(
+      "http://localhost/Healerz/PHP/patient/addMedicalRequest.php",data
+    )
+    .catch((err) => {
+      console.log(err);
+    });
+    console.log(response);
+    alert(response.data.message);
+  };
+
   return (
     <div>
       <nav
@@ -219,12 +236,13 @@ const Profile = () => {
             <div className="">
               <div className="form-container">
                 <h3 className="serhed6">Request Medical</h3>
-                <form id="medical-request-form">
+                <form id="medical-request-form" onSubmit={(e)=>handleAddMedicalRequest(e)}>
                   <div className="form-floating">
                     <input
                       type="date"
                       className="form-control"
                       id="floatingPassword"
+                      name="consultationDate"
                       placeholder="New Password"
                       style={{ width: "100%" }}
                     />
@@ -237,6 +255,7 @@ const Profile = () => {
                       className="form-control"
                       id="floatingPassword"
                       placeholder="New Password"
+                      name="duration"
                       style={{ width: "100%" }}
                     />
                     <label htmlFor="floatingPassword">Duration (In Days)</label>
@@ -248,13 +267,14 @@ const Profile = () => {
                       className="form-control"
                       id="floatingPassword"
                       placeholder="New Password"
+                      name="message"
                       style={{ width: "100%" }}
                     />
                     <label htmlFor="floatingPassword">Message</label>
                   </div>
                   <hr />
                   <div className="button">
-                    <button className="btn shadow gradient-button">
+                    <button className="btn shadow gradient-button" type="submit">
                       Submit Request
                     </button>
                   </div>
