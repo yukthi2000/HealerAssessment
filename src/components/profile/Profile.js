@@ -7,10 +7,15 @@ import { Link } from "react-router-dom";
 import farhath from "../../assets/farhath.jpg";
 import Avatar from "@mui/material/Avatar";
 import default_dp from "../../assets/default_dp.png";
+import axios from "axios";
 
 const Profile = () => {
 
-  const [profilepic,setprofilepic]=useState(default_dp)
+  const [profilepic,setprofilepic]=useState(default_dp);
+  const [patientName, setPatientName] = useState('');
+  const [patientID, setPatientID] = useState('');
+  const [patientAddress, setPatientAddress] = useState('');
+  const [patientPhone, setPatientPhone] = useState('');
   const [patients, setpatients] = useState([]);
 
   const [medicallist, setmedicallist] = useState([
@@ -25,24 +30,23 @@ const Profile = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    // // Filter the patient list based on ID, Name, and Blood Group filters
-    // const filteredList = patients.filter(
-    //   (patient) =>
-    //     patient.Patient_ID.includes(searchTerm3) &&
-    //     patient.PatientName.toLowerCase().includes(searchTerm4.toLowerCase()) &&
-    //     (selectedBloodGroup === "" || patient.BloodGroup === selectedBloodGroup)
-    // );
-    // setFilteredPatientList(filteredList);
-    console.log(patients);
-  }, []);
-
   const fetchData = async () => {
     try {
-      const response = await axios.get(
+      const details = await axios.get(
         "http://localhost/Healerz/PHP/patient/patientdetails.php"
       );
-      setpatients(response.data);
+      setpatients(details.data);
+      const response = await axios.get(
+        "http://localhost/Healerz/PHP/patient/getPatientData.php",{params:{patientID:sessionStorage.getItem("patientID")}}
+      );
+      response.data.map((data) => {
+        setPatientName(data.PatientName);
+        setPatientID(data.Patient_ID);
+        setPatientAddress(data.Address);
+        setPatientPhone(data.PhoneNo);
+      });
+      response.data.profilepic && setprofilepic(response.data.profilepic);
+      console.log(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -142,10 +146,10 @@ const Profile = () => {
 
               <div className="d-flex align-items-center justify-content-center">
                 <div>
-                  <h4 className="m-0">Farhath</h4>
-                  <p className="fs-5 m-0">cst20035</p>
-                  <p className="fs-9 m-0"> N0:31, Kandy, Sri Lanka</p>
-                  <p className="fs-10 m-0">0771234567</p>
+                  <h4 className="m-0">{patientName}</h4>
+                  <p className="m-0">{patientID}</p>
+                  <p className="m-0">{patientAddress}</p>
+                  <p className="m-0">{patientPhone}</p>
                 </div>
               </div>
             </div>
