@@ -39,6 +39,7 @@ function Login() {
         if (response.data.message === "Login successful.") {
           setTimeout(() => {
             sessionStorage.setItem("patient", true);
+            sessionStorage.setItem("patientID", response.data.patientID);
             navigate("/profile");
           }, 100);
         }
