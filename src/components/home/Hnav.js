@@ -5,11 +5,10 @@ import "./Home.css";
 import { IconButton } from "@mui/material";
 import { Avatar } from "@mui/material";
 
-import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
+import VolunteerActivismIcon from "@mui/icons-material/VolunteerActivism";
 import HomeIcon from "@mui/icons-material/Home";
-import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
-import LocalActivityIcon from '@mui/icons-material/LocalActivity';
-
+import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
+import LocalActivityIcon from "@mui/icons-material/LocalActivity";
 
 export default function Hnav() {
   return (
@@ -67,7 +66,7 @@ export default function Hnav() {
                   icon="calendar"
                   className="me-2 naviccon2 nav-hover"
                 /> */}
-                 <IconButton aria-label="delete">
+                <IconButton aria-label="delete">
                   <LocalActivityIcon />
                 </IconButton>
                 <span className="lettnav">EVENTS</span>
@@ -75,12 +74,7 @@ export default function Hnav() {
             </li>
             <li className="nav-item" style={{ paddingLeft: "30px" }}>
               <a className="nav-link nav-hover " href="/login">
-                {/* <FeatherIcon icon="user" className="me-2 loginiccon" /> */}
-                <Avatar
-                    alt="Remy Sharp"
-                    src="/static/images/avatar/1.jpg"
-                    className="me-2 loginiccontt"
-                  />
+                <FeatherIcon icon="user" className="me-2 loginiccon" />
               </a>
             </li>
           </ul>

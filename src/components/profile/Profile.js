@@ -1,12 +1,16 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./Profile.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import logo from "../../assets/logo.png";
 import FeatherIcon from "feather-icons-react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
 import farhath from "../../assets/farhath.jpg";
 import Avatar from "@mui/material/Avatar";
 import default_dp from "../../assets/default_dp.png";
+import AgeCalculator from "../doctorinterface/algorithms/AgeCalculator";
+
 import axios from "axios";
 
 const Profile = () => {
@@ -16,7 +20,120 @@ const Profile = () => {
   const [patientID, setPatientID] = useState('');
   const [patientAddress, setPatientAddress] = useState('');
   const [patientPhone, setPatientPhone] = useState('');
+
   const [patients, setpatients] = useState([]);
+  const [specialDisease, setspecialDisease] = useState("");
+  const [id, setid] = useState(2343);
+  const [userdata, setuserdata] = useState([]);
+  const [patientList, setPatientList] = useState([]);
+  const [filteredPatientList, setFilteredPatientList] = useState([]);
+  const [editedPhoneNo, setEditedPhoneNo] = useState("");
+  const [editedAddress, setEditedAddress] = useState("");
+  const [editedAllDiseases, setEditedAllDiseases] = useState("");
+  const [editedProfilePic, setEditedProfilePic] = useState(null);
+  const [currpw, setcurrpw] = useState(null);
+  const [changepw, setchangepw] = useState(null);
+  const [confirmpw, setconfirmpw] = useState(null);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const patient = patientList.filter((patient) =>
+      patient.Patient_ID.includes("cst20008")
+    );
+    setuserdata(patient);
+  }, [patientList]);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost/Healerz/PHP/patient/patientdetails.php"
+      );
+      setPatientList(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      console.log(error);
+    }
+  };
+
+  const passwordchange = () => {
+    if (currpw === null && changepw === null && confirmpw === null) {
+      toast.error("Fill Feilds");
+    } else {
+      if (currpw === userdata.map((data) => data.Password)[0]) {
+        if (changepw === null) {
+          toast.error("Enter new Password");
+        } else if (changepw === confirmpw && changepw !== null) {
+          if (currpw === changepw) {
+            toast.warn("Existing Password !");
+          } else {
+            const tempuserdata = [...userdata];
+            tempuserdata[0].Password = changepw;
+            setuserdata(tempuserdata);
+            console.log(userdata[0]);
+            axios
+              .put(
+                "http://localhost/HealerZ/PHP/patient/changePassword.php",
+                userdata[0]
+              )
+              .then((res) => {
+                console.log(res);
+                toast.success("Password Change Completed");
+                window.location.reload();
+                // res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
+        } else {
+          toast.error("Wrong Confirm Password !");
+        }
+      } else {
+        toast.error("Wrong Current Password !");
+      }
+    }
+  };
+  const handleProfileUpdate = () => {
+    // const formData = new FormData()
+    // formData.append("Patient_ID", id);
+    // formData.append("PhoneNo", editedPhoneNo);
+    // formData.append("Address", editedAddress);
+    // formData.append("SpecialDisease", editedAllDiseases);
+
+    if (editedProfilePic) {
+      // const alldata=[...userdata];
+      // alldata[0].Profile=editedProfilePic;
+      // setuserdata(alldata);
+    }
+
+    if (userdata[0].PhoneNo.length !== 10) {
+      toast.error("Invalid Phone Number");
+    } else {
+      console.log(userdata[0]);
+      axios
+        .put(
+          "http://localhost/HealerZ/PHP/patient/updateProfile.php",
+          userdata[0]
+        )
+        .then((res) => {
+          console.log(res);
+          if (res.data === "Patient details not foundNo file uploaded") {
+            toast.error("No any Changes");
+          } else {
+            toast.success("Changes Modified");
+            window.location.reload();
+          }
+
+          // res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
 
   const [medicallist, setmedicallist] = useState([
     { No: 1, date: "07-07-2023" },
@@ -26,31 +143,31 @@ const Profile = () => {
     { No: 5, date: "07-11-2021" },
   ]);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
-  const fetchData = async () => {
-    try {
-      const details = await axios.get(
-        "http://localhost/Healerz/PHP/patient/patientdetails.php"
-      );
-      setpatients(details.data);
-      const response = await axios.get(
-        "http://localhost/Healerz/PHP/patient/getPatientData.php",{params:{patientID:sessionStorage.getItem("patientID")}}
-      );
-      response.data.map((data) => {
-        setPatientName(data.PatientName);
-        setPatientID(data.Patient_ID);
-        setPatientAddress(data.Address);
-        setPatientPhone(data.PhoneNo);
-      });
-      response.data.profilepic && setprofilepic(response.data.profilepic);
-      console.log(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  // const fetchData = async () => {
+  //   try {
+  //     const details = await axios.get(
+  //       "http://localhost/Healerz/PHP/patient/patientdetails.php"
+  //     );
+  //     setpatients(details.data);
+  //     const response = await axios.get(
+  //       "http://localhost/Healerz/PHP/patient/getPatientData.php",{params:{patientID:sessionStorage.getItem("patientID")}}
+  //     );
+  //     response.data.map((data) => {
+  //       setPatientName(data.PatientName);
+  //       setPatientID(data.Patient_ID);
+  //       setPatientAddress(data.Address);
+  //       setPatientPhone(data.PhoneNo);
+  //     });
+  //     response.data.profilepic && setprofilepic(response.data.profilepic);
+  //     console.log(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching data:", error);
+  //   }
+  // };
 
 
   const onPDFdownload = () => {
@@ -127,8 +244,13 @@ const Profile = () => {
                     src="/static/images/avatar/1.jpg"
                     className="me-2 loginiccontt"
                   /> */}
-                                            <img src={profilepic} alt='avatar' className='rounded-circle me-2 loginiccontt' width='40px' height='40px'/>
-
+                  <img
+                    src={profilepic}
+                    alt="avatar"
+                    className="rounded-circle me-2 loginiccontt"
+                    width="40px"
+                    height="40px"
+                  />
                 </a>
               </li>
             </ul>
@@ -150,49 +272,51 @@ const Profile = () => {
               </div>
               <div></div>
             </div> */}
-            <div className="d-flex  justify-content-center mb-2">
-              <div className="d-flex align-items-center justify-content-center ms-2">
-                <img
-                  src={profilepic}
-                  alt="avatar"
-                  className="rounded-circle me-2"
-                  width="100px"
-                  height="100px"
-                />
-              </div>
+            {userdata.map((data, index) => (
+              <div key={index}>
+                <div className="d-flex justify-content-center mb-2">
+                  <div className="d-flex align-items-center justify-content-center ms-2">
+                    <img
+                      src={profilepic}
+                      alt="avatar"
+                      className="rounded-circle me-2"
+                      width="100px"
+                      height="100px"
+                    />
+                  </div>
 
-              <div className="d-flex align-items-center justify-content-center">
-                <div>
-                  <h4 className="m-0">{patientName}</h4>
-                  <p className="m-0">{patientID}</p>
-                  <p className="m-0">{patientAddress}</p>
-                  <p className="m-0">{patientPhone}</p>
+                  <div className="d-flex align-items-center justify-content-center">
+                    <div>
+                      <h4 className="m-0">{data.PatientName}</h4>
+                      <p className="fs-5 m-0">{data.Patient_ID}</p>
+                      <p className="fs-9 m-0">{data.Address}</p>
+                      <p className="fs-10 m-0">{data.PhoneNo}</p>
+                    </div>
+                  </div>
+                </div>
+                <hr />
+                <div className="info-2">
+                  <p info-2>
+                    Age :{" "}
+                    <span className="green">
+                      <AgeCalculator dateOfBirth={data.DateOfBirth} /> years
+                    </span>
+                  </p>
+                  <p info-2>Gender : {data.Gender}</p>
+                  <p info-2>
+                    Blood Group : <span className="red">{data.BloodGroup}</span>{" "}
+                  </p>
+                  <p info-2>
+                    Allergies :{" "}
+                    <span className="blue">{data.SpecialDisease}</span>
+                  </p>
                 </div>
               </div>
-            </div>
-            <hr />
-            <div className="info-2">
-              <p info-2>
-                Age <span className="green">22 years</span>
-              </p>
-              <p info-2>Gender Male</p>
-              <p info-2>
-                Blood Group <span className="red">B+</span>{" "}
-              </p>
-              <p info-2>
-                Allergies <span className="blue">No</span>
-              </p>
-            </div>
+            ))}
 
             <div className="specialDisease">
               <h6>Special Disease</h6>
-              <p>
-                "Technophobia Virus" or "Technophobia Syndrome": This fictional
-                disease is often portrayed in comedic settings where individuals
-                exhibit an irrational fear or aversion to technology. It can
-                lead to humorous situations as characters struggle to cope with
-                modern devices and advancements.
-              </p>
+              <p>{userdata.map((data) => data.SpecialDisease)}</p>
             </div>
             <hr />
             <br />
@@ -286,60 +410,100 @@ const Profile = () => {
             <br />
             <div className="form-container">
               <h3 className="serhed6">Edit Profile Details</h3>
-              <form id="editProfileForm">
+              <form id="editProfileForm" encType="multipart/form-data">
                 <div className="container">
                   <div className="column-container">
                     <div className="column-1">
                       <div className="sub-row">
                         <h5>Edit Profile</h5>
                       </div>
+                      {userdata.map((data, index) => (
+                        <div className="personalInfo">
+                          <div className="form-floating">
+                            <input
+                              type="number"
+                              className="form-control"
+                              id="floatingPassword"
+                              placeholder="New Password"
+                              style={{ width: "100%" }}
+                              value={editedPhoneNo || data.PhoneNo}
+                              onChange={(e) => {
+                                // if (e.target.value.length > 10 ) {
+                                //   toast.error("Invalid Phone Number");
+                                // } else {
+                                setEditedPhoneNo(e.target.value);
+                                console.log(e.target.value);
+                                const updatedUserdata = [...userdata];
+                                // console.log(updatedUserdata[0]);
+                                updatedUserdata[0].PhoneNo =
+                                  e.target.value || data.PhoneNo;
+                                setuserdata(updatedUserdata);
+                                // console.log(updatedUserdata);
+                                // }
+                              }}
+                            />
+                            <label htmlFor="floatingPassword">
+                              Change PhoneNo
+                            </label>
+                          </div>
+                          <br />
+                          <div className="form-floating">
+                            <textarea
+                              type="text"
+                              className="form-control"
+                              id="floatingPassword"
+                              placeholder="New Password"
+                              style={{ width: "100%" }}
+                              value={editedAddress || data.Address}
+                              onChange={(e) => {
+                                setEditedAddress(e.target.value);
+                                const updatedUserdata = [...userdata];
+                                updatedUserdata[0].Address =
+                                  e.target.value || data.Address;
+                                setuserdata(updatedUserdata);
+                              }}
+                            />
+                            <label htmlFor="floatingPassword">
+                              Change Address
+                            </label>
+                          </div>
+                          <br />
+                          <div className="form-floating">
+                            <input
+                              type="file"
+                              name="Profile"
+                              className="form-control"
+                              accept=".jpg, .jpeg, .png"
+                              id="profilePic"
+                              placeholder="Change Profile pic"
+                              style={{ width: "100%" }}
+                              onChange={(e) => {
+                                setEditedProfilePic(e.target.files[0]);
+                                const tempuserdata = [...userdata];
+                                tempuserdata[0].Profile = e.target.files[0];
+                                setuserdata(tempuserdata);
+                              }}
+                            />
+                            <label htmlFor="ProfilePic">
+                              Change profile pic
+                            </label>
+                          </div>
+                          <hr />
+                          <div className="button">
+                            <button
+                              className="btn shadow gradient-button"
+                              onClick={(e) => {
+                                e.preventDefault();
 
-                      <div className="personalInfo">
-                        <div className="form-floating">
-                          <input
-                            type="text"
-                            className="form-control"
-                            id="floatingPassword"
-                            placeholder="New Password"
-                            style={{ width: "100%" }}
-                          />
-                          <label htmlFor="floatingPassword">
-                            Change PhoneNo
-                          </label>
+                                // console.log(userdata);
+                                handleProfileUpdate();
+                              }}
+                            >
+                              Save changes{" "}
+                            </button>
+                          </div>
                         </div>
-                        <br />
-                        <div className="form-floating">
-                          <textarea
-                            type="text"
-                            className="form-control"
-                            id="floatingPassword"
-                            placeholder="New Password"
-                            style={{ width: "100%" }}
-                          />
-                          <label htmlFor="floatingPassword">
-                            Change Address
-                          </label>
-                        </div>
-                        <br />
-                        <div className="form-floating">
-                          <input
-                            type="file"
-                            className="form-control"
-                            id="floatingPassword"
-                            placeholder="Change Profile pic"
-                            style={{ width: "100%" }}
-                          />
-                          <label htmlFor="floatingPassword">
-                            Change profile pic
-                          </label>
-                        </div>
-                        <hr />
-                        <div className="button">
-                          <button className="btn shadow gradient-button">
-                            Save changes{" "}
-                          </button>
-                        </div>
-                      </div>
+                      ))}
                     </div>
 
                     <div className="column-2">
@@ -354,6 +518,9 @@ const Profile = () => {
                             className="form-control"
                             id="floatingPassword"
                             placeholder="Current Password"
+                            onChange={(e) => {
+                              setcurrpw(e.target.value);
+                            }}
                             style={{ width: "100%" }}
                           />
                           <label htmlFor="floatingPassword">
@@ -367,6 +534,9 @@ const Profile = () => {
                             className="form-control"
                             id="floatingPassword"
                             placeholder="New Password"
+                            onChange={(e) => {
+                              setchangepw(e.target.value);
+                            }}
                             style={{ width: "100%" }}
                           />
                           <label htmlFor="floatingPassword">New Password</label>
@@ -378,6 +548,9 @@ const Profile = () => {
                             className="form-control"
                             id="floatingPassword"
                             placeholder="Confirm Password"
+                            onChange={(e) => {
+                              setconfirmpw(e.target.value);
+                            }}
                             style={{ width: "100%" }}
                           />
                           <label htmlFor="floatingPassword">
@@ -386,7 +559,14 @@ const Profile = () => {
                         </div>
                         <hr />
                         <div className="button">
-                          <button className="btn shadow gradient-button">
+                          <button
+                            className="btn shadow gradient-button"
+                            onClick={(e) => {
+                              e.preventDefault();
+
+                              passwordchange();
+                            }}
+                          >
                             Save changes{" "}
                           </button>
                         </div>
@@ -412,8 +592,19 @@ const Profile = () => {
                         className="form-control"
                         id="diseases"
                         placeholder="Confirm Password"
-                        // style={{ width: "100%" }}
+                        value={
+                          userdata.map((data) => data.SpecialDisease) ||
+                          editedAllDiseases
+                        }
                         rows={7}
+                        onChange={(e) => {
+                          setEditedAllDiseases(e.target.value);
+                          const updatedUserdata = [...userdata];
+                          updatedUserdata[0].SpecialDisease =
+                            e.target.value || data.SpecialDisease;
+
+                          setuserdata(updatedUserdata);
+                        }}
                       ></textarea>
                       <label htmlFor="floatingPassword">
                         Specific Diseases
@@ -422,7 +613,14 @@ const Profile = () => {
                   </div>
                   <hr />
                   <div className="button">
-                    <button className="btn shadow gradient-button">
+                    <button
+                      className="btn shadow gradient-button"
+                      onClick={(e) => {
+                        e.preventDefault();
+
+                        handleProfileUpdate();
+                      }}
+                    >
                       Save Changes
                     </button>
                   </div>
@@ -433,6 +631,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };
