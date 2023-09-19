@@ -130,9 +130,9 @@ class MedicalRequest
         try {
             $con = new DBconnector();
             $conn = $con->getConnection();
-            $sql = "INSERT INTO medicalrequest (Patient_ID,ConsultationDate,Message,State) VALUES (?,?,?,?)";
+            $sql = "INSERT INTO medicalrequest (Patient_ID, Doctor_ID, ConsultationDate, StartDate, EndDate, Message, State) VALUES (?, NULL, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
-            $stmt->execute([$this->Patient_ID, $this->ConsultationDate, $this->Message, $this->State]);
+            $stmt->execute([$this->Patient_ID, $this->ConsultationDate, $this->StartDate, $this->EndDate, $this->Message, $this->State]);
             $conn = null;
             return true;
         } catch (PDOException $ex) {
