@@ -11,12 +11,11 @@ import Avatar from "@mui/material/Avatar";
 import default_dp from "../../assets/default_dp.png";
 import AgeCalculator from "../doctorinterface/algorithms/AgeCalculator";
 
+
 const Profile = () => {
   const [profilepic, setprofilepic] = useState(default_dp);
   const [specialDisease, setspecialDisease] = useState("");
   const [userdata, setuserdata] = useState([]);
-  const [patientList, setPatientList] = useState([]);
-  const [filteredPatientList, setFilteredPatientList] = useState([]);
   const [editedPhoneNo, setEditedPhoneNo] = useState("");
   const [editedAddress, setEditedAddress] = useState("");
   const [editedAllDiseases, setEditedAllDiseases] = useState("");
@@ -69,26 +68,28 @@ const Profile = () => {
     }
   };
   const handleProfileUpdate = () => {
-    // const formData = new FormData()
-    // formData.append("Patient_ID", id);
-    // formData.append("PhoneNo", editedPhoneNo);
-    // formData.append("Address", editedAddress);
-    // formData.append("SpecialDisease", editedAllDiseases);
-
-    if (editedProfilePic) {
-      // const alldata=[...userdata];
-      // alldata[0].Profile=editedProfilePic;
-      // setuserdata(alldata);
-    }
 
     if (userdata[0].PhoneNo.length !== 10) {
       toast.error("Invalid Phone Number");
     } else {
       console.log(userdata[0]);
+      const formData = new FormData();
+      formData.append("Patient_ID", sessionStorage.getItem("patientID"));
+      formData.append("PhoneNo", userdata[0].PhoneNo);
+      formData.append("Address", userdata[0].Address);
+      formData.append("SpecialDisease", userdata[0].SpecialDisease);
+      formData.append("Profile", userdata[0].Profile);
+      const data = Object.fromEntries(formData);
+
       axios
         .put(
           "http://localhost/HealerZ/PHP/patient/updateProfile.php",
-          userdata[0]
+          data,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
         )
         .then((res) => {
           console.log(res);
@@ -96,7 +97,7 @@ const Profile = () => {
             toast.error("No any Changes");
           } else {
             toast.success("Changes Modified");
-            window.location.reload();
+            // window.location.reload();
           }
 
           // res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
@@ -456,6 +457,7 @@ const Profile = () => {
                                 const tempuserdata = [...userdata];
                                 tempuserdata[0].Profile = e.target.files[0];
                                 setuserdata(tempuserdata);
+                                console.log(userdata[0]);
                               }}
                             />
                             <label htmlFor="ProfilePic">
