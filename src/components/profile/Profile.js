@@ -11,15 +11,12 @@ import Avatar from "@mui/material/Avatar";
 import default_dp from "../../assets/default_dp.png";
 import AgeCalculator from "../doctorinterface/algorithms/AgeCalculator";
 
-import axios from "axios";
-
 const Profile = () => {
-
-  const [profilepic,setprofilepic]=useState(default_dp);
-  const [patientName, setPatientName] = useState('');
-  const [patientID, setPatientID] = useState('');
-  const [patientAddress, setPatientAddress] = useState('');
-  const [patientPhone, setPatientPhone] = useState('');
+  const [profilepic, setprofilepic] = useState(default_dp);
+  const [patientName, setPatientName] = useState("");
+  const [patientID, setPatientID] = useState("");
+  const [patientAddress, setPatientAddress] = useState("");
+  const [patientPhone, setPatientPhone] = useState("");
 
   const [patients, setpatients] = useState([]);
   const [specialDisease, setspecialDisease] = useState("");
@@ -169,7 +166,6 @@ const Profile = () => {
   //   }
   // };
 
-
   const onPDFdownload = () => {
     // using Java Script method to get PDF file
     fetch("sample.pdf").then((response) => {
@@ -191,14 +187,19 @@ const Profile = () => {
     formData.append("patientID", sessionStorage.getItem("patientID"));
     const data = Object.fromEntries(formData);
     console.log(data);
-    const response = await axios.post(
-      "http://localhost/Healerz/PHP/patient/addMedicalRequest.php",data
-    )
-    .catch((err) => {
-      console.log(err);
-    });
+    const response = await axios
+      .post("http://localhost/Healerz/PHP/patient/addMedicalRequest.php", data)
+      .catch((err) => {
+        console.log(err);
+      });
     console.log(response);
     alert(response.data.message);
+  };
+
+  const logout = () => {
+    sessionStorage.setItem("patient", false);
+    sessionStorage.setItem("patientID", null);
+    sessionStorage.setItem("loginStatus", "Logged out successfully!");
   };
 
   return (
@@ -237,7 +238,11 @@ const Profile = () => {
                 </a>
               </li>
               <li className="nav-item" style={{ paddingLeft: "30px" }}>
-                <a className="nav-link nav-hover " href="/login">
+                <a
+                  className="nav-link nav-hover "
+                  href="/login"
+                  onClick={logout}
+                >
                   {/* <FeatherIcon icon="user" className="me-2 loginiccontt" /> */}
                   {/* <Avatar
                     alt="Remy Sharp"
@@ -360,7 +365,10 @@ const Profile = () => {
             <div className="">
               <div className="form-container">
                 <h3 className="serhed6">Request Medical</h3>
-                <form id="medical-request-form" onSubmit={(e)=>handleAddMedicalRequest(e)}>
+                <form
+                  id="medical-request-form"
+                  onSubmit={(e) => handleAddMedicalRequest(e)}
+                >
                   <div className="form-floating">
                     <input
                       type="date"
@@ -398,7 +406,10 @@ const Profile = () => {
                   </div>
                   <hr />
                   <div className="button">
-                    <button className="btn shadow gradient-button" type="submit">
+                    <button
+                      className="btn shadow gradient-button"
+                      type="submit"
+                    >
                       Submit Request
                     </button>
                   </div>
