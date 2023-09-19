@@ -10,7 +10,10 @@ use \classes\MedicalRequest;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
-    $medicalRequest = new MedicalRequest(null, $data["patientID"], null, $data["consultationDate"], null, null, $data["message"], "Requested");
+
+    $startDate = $data["consultationDate"];
+    $endDate = date('Y-m-d', strtotime($startDate. ' + '.($data['duration']-1).' days'));
+    $medicalRequest = new MedicalRequest(null, $data["patientID"], null, $data["consultationDate"], $startDate, $endDate, $data["message"], "Requested");
 
     if ($medicalRequest->createRequest()) {
         $response = array("message" => "Medical request added successfully.");
