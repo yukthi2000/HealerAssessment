@@ -36,21 +36,8 @@ try {
         echo 'Patient details not found';
     }
 
-    if (isset($_FILES['Profile']) && $_FILES['Profile']['error'] === UPLOAD_ERR_OK) {
-        $target_dir = "profile/users_pic/";
-        $target_file = $target_dir . basename($_FILES["Profile"]["name"]);
-        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-    
-        if (move_uploaded_file($_FILES["Profile"]["tmp_name"], $target_file)) {
-            $imageLink = $target_file;
-            $stmt = $conn->prepare("UPDATE patient SET profile = :profile WHERE Patient_ID = :Patient_ID");
-            $stmt->bindValue(':Patient_ID', $data['Patient_ID']);
-            $stmt->bindValue(':profile', $imageLink);
-            $stmt->execute();
-            echo json_encode(array('message' => 'Profile picture uploaded successfully'));
-        } else {
-            echo json_encode(array('error' => 'Sorry, there was an error uploading your file.'));
-        }
+        if (isset($_FILES['Profile'])) {
+            echo "awoo";
     } else {
         echo 'No file uploaded';
     }

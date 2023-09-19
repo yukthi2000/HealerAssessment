@@ -23,9 +23,9 @@ const Profile = () => {
   const [editedAddress, setEditedAddress] = useState("");
   const [editedAllDiseases, setEditedAllDiseases] = useState("");
   const [editedProfilePic, setEditedProfilePic] = useState(null);
-  const [currpw, setcurrpw] = useState();
-  const [changepw, setchangepw] = useState();
-  const [confirmpw, setconfirmpw] = useState();
+  const [currpw, setcurrpw] = useState(null);
+  const [changepw, setchangepw] = useState(null);
+  const [confirmpw, setconfirmpw] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -51,31 +51,41 @@ const Profile = () => {
   };
 
   const passwordchange = () => {
-    if (currpw === userdata.map((data) => data.Password)[0]) {
-      if (changepw === confirmpw) {
-        const tempuserdata = [...userdata];
-        tempuserdata[0].Password = changepw;
-        setuserdata(tempuserdata);
-        console.log(userdata[0]);
-        axios
-          .put(
-            "http://localhost/HealerZ/PHP/patient/changePassword.php",
-            userdata[0]
-          )
-          .then((res) => {
-            console.log(res);
-            toast.success("Password Change Completed");
-            window.location.reload();
-            // res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      } else {
-        toast.error("Wrong Confirm Password !");
-      }
+    if (currpw === null && changepw === null && confirmpw === null) {
+      toast.error("Fill Feilds");
     } else {
-      toast.error("Wrong Current Password !");
+      if (currpw === userdata.map((data) => data.Password)[0]) {
+        if (changepw === null) {
+          toast.error("Enter new Password");
+        } else if (changepw === confirmpw && changepw !== null) {
+          if (currpw === changepw) {
+            toast.warn("Existing Password !");
+          } else {
+            const tempuserdata = [...userdata];
+            tempuserdata[0].Password = changepw;
+            setuserdata(tempuserdata);
+            console.log(userdata[0]);
+            axios
+              .put(
+                "http://localhost/HealerZ/PHP/patient/changePassword.php",
+                userdata[0]
+              )
+              .then((res) => {
+                console.log(res);
+                toast.success("Password Change Completed");
+                window.location.reload();
+                // res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
+        } else {
+          toast.error("Wrong Confirm Password !");
+        }
+      } else {
+        toast.error("Wrong Current Password !");
+      }
     }
   };
   const handleProfileUpdate = () => {
@@ -85,34 +95,36 @@ const Profile = () => {
     // formData.append("Address", editedAddress);
     // formData.append("SpecialDisease", editedAllDiseases);
 
-    console.log(userdata);
-    // if (editedProfilePic) {
-
-    // }
-    if (userdata[0].PhoneNo.length !== 10) {
-      toast.error("Invalid Phone Number");
+    if (editedProfilePic) {
+      // const alldata=[...userdata];
+      // alldata[0].Profile=editedProfilePic;
+      // setuserdata(alldata);
     }
 
-    else{console.log(userdata[0]);
-    axios
-      .put(
-        "http://localhost/HealerZ/PHP/patient/updateProfile.php",
-        userdata[0]
-      )
-      .then((res) => {
-        console.log(res);
-        if (res.data === "Patient details not foundNo file uploaded") {
-          toast.error("No any Changes");
-        }else{
-          toast.success("Changes Modified");
+    if (userdata[0].PhoneNo.length !== 10) {
+      toast.error("Invalid Phone Number");
+    } else {
+      console.log(userdata[0]);
+      axios
+        .put(
+          "http://localhost/HealerZ/PHP/patient/updateProfile.php",
+          userdata[0]
+        )
+        .then((res) => {
+          console.log(res);
+          if (res.data === "Patient details not foundNo file uploaded") {
+            toast.error("No any Changes");
+          } else {
+            toast.success("Changes Modified");
             window.location.reload();
-        }
+          }
 
-        // res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
-      })
-      .catch((err) => {
-        console.log(err);
-      });}
+          // res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
 
   const [medicallist, setmedicallist] = useState([
