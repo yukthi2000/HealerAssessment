@@ -13,14 +13,7 @@ import AgeCalculator from "../doctorinterface/algorithms/AgeCalculator";
 
 const Profile = () => {
   const [profilepic, setprofilepic] = useState(default_dp);
-  const [patientName, setPatientName] = useState("");
-  const [patientID, setPatientID] = useState("");
-  const [patientAddress, setPatientAddress] = useState("");
-  const [patientPhone, setPatientPhone] = useState("");
-
-  const [patients, setpatients] = useState([]);
   const [specialDisease, setspecialDisease] = useState("");
-  const [id, setid] = useState(2343);
   const [userdata, setuserdata] = useState([]);
   const [patientList, setPatientList] = useState([]);
   const [filteredPatientList, setFilteredPatientList] = useState([]);
@@ -36,24 +29,6 @@ const Profile = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    const patient = patientList.filter((patient) =>
-      patient.Patient_ID.includes("cst20008")
-    );
-    setuserdata(patient);
-  }, [patientList]);
-
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost/Healerz/PHP/patient/patientdetails.php"
-      );
-      setPatientList(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      console.log(error);
-    }
-  };
 
   const passwordchange = () => {
     if (currpw === null && changepw === null && confirmpw === null) {
@@ -140,31 +115,19 @@ const Profile = () => {
     { No: 5, date: "07-11-2021" },
   ]);
 
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
 
-  // const fetchData = async () => {
-  //   try {
-  //     const details = await axios.get(
-  //       "http://localhost/Healerz/PHP/patient/patientdetails.php"
-  //     );
-  //     setpatients(details.data);
-  //     const response = await axios.get(
-  //       "http://localhost/Healerz/PHP/patient/getPatientData.php",{params:{patientID:sessionStorage.getItem("patientID")}}
-  //     );
-  //     response.data.map((data) => {
-  //       setPatientName(data.PatientName);
-  //       setPatientID(data.Patient_ID);
-  //       setPatientAddress(data.Address);
-  //       setPatientPhone(data.PhoneNo);
-  //     });
-  //     response.data.profilepic && setprofilepic(response.data.profilepic);
-  //     console.log(response.data);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost/Healerz/PHP/patient/getPatientData.php",{params:{patientID:sessionStorage.getItem("patientID")}}
+      );
+      setuserdata(response.data);
+      response.data.profilepic && setprofilepic(response.data.profilepic);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const onPDFdownload = () => {
     // using Java Script method to get PDF file
