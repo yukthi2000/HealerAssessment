@@ -33,14 +33,11 @@ try {
     if ($rowCount > 0) {
         echo json_encode(array('message' => 'Profile details updated successfully'));
     } else {
-        echo 'Patient details not found';
+        echo json_encode(array('error' => 'Patient details not found'));
+
     }
 
-        if (isset($_FILES['Profile'])) {
-            echo "awoo";
-    } else {
-        echo 'No file uploaded';
-    }
+     
     
 
     // if (isset($_FILES['Profile']) ) {

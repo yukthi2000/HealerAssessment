@@ -17,6 +17,7 @@ const Profile = () => {
   const [specialDisease, setspecialDisease] = useState("");
   const [id, setid] = useState(2343);
   const [userdata, setuserdata] = useState([]);
+
   const [patientList, setPatientList] = useState([]);
   const [filteredPatientList, setFilteredPatientList] = useState([]);
   const [editedPhoneNo, setEditedPhoneNo] = useState("");
@@ -101,7 +102,7 @@ const Profile = () => {
       // setuserdata(alldata);
     }
 
-    if (userdata[0].PhoneNo.length !== 10) {
+    if (userdata[0].PhoneNo.length > 10) {
       toast.error("Invalid Phone Number");
     } else {
       console.log(userdata[0]);
@@ -112,9 +113,9 @@ const Profile = () => {
         )
         .then((res) => {
           console.log(res);
-          if (res.data === "Patient details not foundNo file uploaded") {
+          if (res.data.error==="Patient details not found") {
             toast.error("No any Changes");
-          } else {
+          }else {
             toast.success("Changes Modified");
             window.location.reload();
           }
@@ -125,6 +126,43 @@ const Profile = () => {
           console.log(err);
         });
     }
+  };
+
+  const handleAlergyUpdate = () => {
+    // const formData = new FormData()
+    // formData.append("Patient_ID", id);
+    // formData.append("PhoneNo", editedPhoneNo);
+    // formData.append("Address", editedAddress);
+    // formData.append("SpecialDisease", editedAllDiseases);
+
+    if (editedProfilePic) {
+      // const alldata=[...userdata];
+      // alldata[0].Profile=editedProfilePic;
+      // setuserdata(alldata);
+    }
+
+    console.log(userdata[0]);
+    axios
+      .put(
+        "http://localhost/HealerZ/PHP/patient/updateProfile.php",
+        userdata[0]
+      )
+      .then((res) => {
+       
+        if (res.data.error==="Patient details not found") {
+          toast.error("No any Changes");
+        }
+      
+        else {
+          toast.success("Changes Modified");
+          window.location.reload();
+        }
+
+        // res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const [medicallist, setmedicallist] = useState([
@@ -563,7 +601,7 @@ const Profile = () => {
                       onClick={(e) => {
                         e.preventDefault();
 
-                        handleProfileUpdate();
+                        handleAlergyUpdate();
                       }}
                     >
                       Save Changes
