@@ -29,14 +29,21 @@ try {
         throw new Exception('Patient details not found');
     }
     
-    //update patient details
-    $stmt = $conn->prepare("UPDATE patient SET PhoneNo = ?, Address = ? ,SpecialDisease= ? WHERE Patient_ID = ?");
-    $stmt->execute([$_POST['PhoneNo'], $_POST['Address'], $_POST['SpecialDisease'], $_POST['Patient_ID']]);
+    if (isset($_POST['Address']) && isset($_POST['PhoneNo'])) {
+        $stmt = $conn->prepare("UPDATE patient SET Address = ?, PhoneNo = ? WHERE Patient_ID = ?");
+        $stmt->execute([$_POST['Address'], $_POST['PhoneNo'], $_POST['Patient_ID']]);
 
-    $message = $message . 'Patient details updated successfully.';
+        $message = 'Profile updated successfully.';
+    }
+    elseif (isset($_POST['SpecialDisease'])) {
+        $stmt = $conn->prepare("UPDATE patient SET SpecialDisease = ? WHERE Patient_ID = ?");
+        $stmt->execute([$_POST['SpecialDisease'], $_POST['Patient_ID']]);
+
+        $message = 'Allergy details updated successfully.';
+    }
 
 
-    if (isset($_FILES["Profile"])) {
+    if (isset($_FILES["Profile"] && !isset($_POST['SpecialDisease']))) {
         $target_dir = "profilePics/";
 
         //save with patient id as file name

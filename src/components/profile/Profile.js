@@ -109,13 +109,13 @@ const Profile = () => {
   const handleAlergyUpdate = () => {
 
 
-    const formData = new FormData();
-    formData.append("Patient_ID", sessionStorage.getItem("patientID"));
-    formData.append("SpecialDisease", userdata[0].SpecialDisease);
+    const formData1 = new FormData();
+    formData1.append("Patient_ID", sessionStorage.getItem("patientID"));
+    formData1.append("SpecialDisease", userdata[0].SpecialDisease);
     axios
       .post(
         "http://localhost/HealerZ/PHP/patient/updateProfile.php",
-        formData,
+        formData1,
         {
           headers: {
             "Content-Type": "multipart/form-data",
