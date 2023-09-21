@@ -46,8 +46,7 @@ const Profile = () => {
                 userdata[0]
               )
               .then((res) => {
-                console.log(res);
-                toast.success("Password Change Completed");
+                toast.success("Password Changed Successfully");
                 window.location.reload();
               })
               .catch((err) => {
@@ -64,8 +63,7 @@ const Profile = () => {
   };
 
   const handleProfileUpdate = () => {
-    console.log(editedPhoneNo, editedAddress, editedProfilePic);
-    if (editedPhoneNo.length < 10 || editedPhoneNo.length > 10) {
+    if (editedPhoneNo.length < 10 || editedPhoneNo.length > 10 || editedPhoneNo[0] != 0) {
       toast.error("Invalid Phone Number");
     } else if (
       userdata[0].Address == editedAddress &&
@@ -463,7 +461,7 @@ const Profile = () => {
                         <div className="personalInfo">
                           <div className="form-floating">
                             <input
-                              type="text"
+                              type="number"
                               className="form-control"
                               id="phoneNo"
                               placeholder="New Password"
