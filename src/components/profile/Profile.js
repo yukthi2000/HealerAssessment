@@ -23,6 +23,10 @@ const Profile = () => {
 
   useEffect(() => {
     fetchData();
+    console.log(userdata.map((data) => data.SpecialDisease));
+    if (userdata.map((data) => data.profile) !== null) {
+      setprofilepic(userdata.map((data) => data.SpecialDisease));
+    }
   }, []);
 
   const passwordchange = () => {
@@ -64,7 +68,7 @@ const Profile = () => {
     }
   };
   const handleProfileUpdate = () => {
-    if (userdata[0].PhoneNo.length !== 10) {
+    if (userdata[0].PhoneNo.length > 10) {
       toast.error("Invalid Phone Number");
     } else {
       const formData = new FormData();
@@ -88,7 +92,6 @@ const Profile = () => {
           }
         )
         .then((res) => {
-
           if (res.data.message) {
             const messages = res.data.message.split(".");
             for (const message of messages) {
@@ -107,8 +110,6 @@ const Profile = () => {
   };
 
   const handleAlergyUpdate = () => {
-
-
     const formData1 = new FormData();
     formData1.append("Patient_ID", sessionStorage.getItem("patientID"));
     formData1.append("SpecialDisease", userdata[0].SpecialDisease);
@@ -121,9 +122,8 @@ const Profile = () => {
             "Content-Type": "multipart/form-data",
           },
         }
-      ) 
+      )
       .then((res) => {
-
         if (res.data.message) {
           const messages = res.data.message.split(".");
           for (const message of messages) {
@@ -136,9 +136,8 @@ const Profile = () => {
         // res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
       })
       .catch((err) => {
-        console.log(err); 
+        console.log(err);
       });
-  
   };
 
   const [medicallist, setmedicallist] = useState([
