@@ -106,6 +106,41 @@ const Profile = () => {
     }
   };
 
+  const handleAlergyUpdate = () => {
+
+
+    const formData = new FormData();
+    formData.append("Patient_ID", sessionStorage.getItem("patientID"));
+    formData.append("SpecialDisease", userdata[0].SpecialDisease);
+    axios
+      .post(
+        "http://localhost/HealerZ/PHP/patient/updateProfile.php",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      ) 
+      .then((res) => {
+
+        if (res.data.message) {
+          const messages = res.data.message.split(".");
+          for (const message of messages) {
+            message && toast.success(message);
+          }
+        }
+
+        res.data.error && toast.error(res.data.error);
+
+        // res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+  };
+
   const [medicallist, setmedicallist] = useState([
     { No: 1, date: "07-07-2023" },
     { No: 2, date: "07-04-2023" },
@@ -587,7 +622,8 @@ const Profile = () => {
                       className="btn shadow gradient-button"
                       onClick={(e) => {
                         e.preventDefault();
-                        handleProfileUpdate();
+
+                        handleAlergyUpdate();
                       }}
                     >
                       Save Changes
