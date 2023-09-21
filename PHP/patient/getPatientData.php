@@ -28,8 +28,26 @@ try {
 
             // Check if any data was found for the given Patient_ID
             if ($filteredData) {
+                //get image path from db
+                $stmt = $conn->prepare("SELECT Profile FROM patient WHERE Patient_ID = '$patientID'");
+                $stmt->execute();
+                $imagePath = $stmt->fetch(PDO::FETCH_ASSOC)['Profile'];
+
+                //check if image exists
+                if (file_exists($imagePath)) {
+                    //get image data
+                    $imageData = file_get_contents($imagePath);
+                    $imageType = mime_content_type($imagePath);
+
+                    //encode image data as base64
+                    $base64 = base64_encode($imageData);
+
+                    //add base64 encoded image data to the filtered data array
+                    $filteredData[0]['Profile'] = $base64;
+                    $filteredData[0]['ProfileType'] = $imageType;
+                }
+
                 // Return the filtered data as JSON
-                header('Content-Type: application/json');
                 echo json_encode($filteredData);
             } else {
                 // If no data found for the given Patient_ID, return an error message or appropriate response
