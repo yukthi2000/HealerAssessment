@@ -38,6 +38,11 @@ try {
         //handle profile picture update
         if (isset($_FILES["Profile"])) {
             $target_dir = "profilePics/";
+
+            //create directory if not exists
+            if (!file_exists($target_dir)) {
+                mkdir($target_dir, 0777, true);
+            }
     
             //save with patient id as file name
             $file_type = strtolower(pathinfo(basename($_FILES["Profile"]["name"]), PATHINFO_EXTENSION));
