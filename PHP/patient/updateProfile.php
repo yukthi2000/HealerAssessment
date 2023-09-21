@@ -43,7 +43,7 @@ try {
     }
 
 
-    if (isset($_FILES["Profile"] && !isset($_POST['SpecialDisease']))) {
+    if (isset($_FILES["Profile"]) && !isset($_POST['SpecialDisease'])) {
         $target_dir = "profilePics/";
 
         //save with patient id as file name
