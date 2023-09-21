@@ -34,6 +34,45 @@ try {
         $stmt->execute([$_POST['Address'], $_POST['PhoneNo'], $_POST['Patient_ID']]);
 
         $message = 'Profile updated successfully.';
+
+        //handle profile picture update
+        if (isset($_FILES["Profile"])) {
+            $target_dir = "profilePics/";
+    
+            //save with patient id as file name
+            $file_type = strtolower(pathinfo(basename($_FILES["Profile"]["name"]), PATHINFO_EXTENSION));
+            $target_file = $target_dir . $_POST['Patient_ID'] . "." . $file_type;
+    
+            // Check file size
+            if ($_FILES["Profile"]["size"] > 500000) {
+                throw new Exception("Sorry, your photo is too large");
+            }
+    
+            // Allow certain file formats
+            if ($file_type != "jpg" && $file_type != "png" && $file_type != "jpeg" && $file_type != "gif") {
+                throw new Exception("Sorry, only JPG, JPEG, PNG & GIF files are allowed");
+            }
+    
+            //remove if file already exists
+            if (file_exists($target_file)) {
+                unlink($target_file);
+            }
+    
+            //save file
+            if (move_uploaded_file($_FILES["Profile"]["tmp_name"], $target_file)) {
+    
+                //update profile pic path in db
+                $stmt = $conn->prepare("UPDATE patient SET Profile = ? WHERE Patient_ID = ?");
+                $stmt->execute([$target_file, $_POST['Patient_ID']]);
+    
+                $message = $message . 'Profile picture updated successfully';
+            } else {
+                throw new Exception("Sorry, there was an error uploading your photo");
+            }
+        }
+        else{
+            throw new Exception('No file uploaded');
+        }
     }
     elseif (isset($_POST['SpecialDisease'])) {
         $stmt = $conn->prepare("UPDATE patient SET SpecialDisease = ? WHERE Patient_ID = ?");
@@ -41,46 +80,7 @@ try {
 
         $message = 'Allergy details updated successfully.';
     }
-
-
-    if (isset($_FILES["Profile"]) && !isset($_POST['SpecialDisease'])) {
-        $target_dir = "profilePics/";
-
-        //save with patient id as file name
-        $file_type = strtolower(pathinfo(basename($_FILES["Profile"]["name"]), PATHINFO_EXTENSION));
-        $target_file = $target_dir . $_POST['Patient_ID'] . "." . $file_type;
-
-        // Check file size
-        if ($_FILES["Profile"]["size"] > 500000) {
-            throw new Exception("Sorry, your photo is too large");
-        }
-
-        // Allow certain file formats
-        if ($file_type != "jpg" && $file_type != "png" && $file_type != "jpeg" && $file_type != "gif") {
-            throw new Exception("Sorry, only JPG, JPEG, PNG & GIF files are allowed");
-        }
-
-        //remove if file already exists
-        if (file_exists($target_file)) {
-            unlink($target_file);
-        }
-
-        //save file
-        if (move_uploaded_file($_FILES["Profile"]["tmp_name"], $target_file)) {
-
-            //update profile pic path in db
-            $stmt = $conn->prepare("UPDATE patient SET Profile = ? WHERE Patient_ID = ?");
-            $stmt->execute([$target_file, $_POST['Patient_ID']]);
-
-            $message = $message . 'Profile picture updated successfully';
-        } else {
-            throw new Exception("Sorry, there was an error uploading your photo");
-        }
-    }
-    else{
-        throw new Exception('No file uploaded');
-    }
-  
+ 
 } catch (PDOException $e) {
     $error = 'Database error: ' . $e->getMessage();
 } catch (Exception $e) {
