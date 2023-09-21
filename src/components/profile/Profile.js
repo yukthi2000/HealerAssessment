@@ -180,6 +180,14 @@ const Profile = () => {
   const handleAddMedicalRequest = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+    console.log(formData.get("duration"), formData.get("message"));
+    if (formData.get("consultationDate") === "" || formData.get("duration") === "" || formData.get("message") === "") {
+      toast.error("Please fill all the fields");
+      return;
+    }else if(formData.get("duration") < 0){
+      toast.error("Please enter a valid duration");
+      return;
+    }
     formData.append("patientID", sessionStorage.getItem("patientID"));
     const data = Object.fromEntries(formData);
     console.log(data);
@@ -189,7 +197,11 @@ const Profile = () => {
         console.log(err);
       });
     console.log(response);
-    alert(response.data.message);
+    if (response.data.message) {
+      toast.success(response.data.message);
+    } else {
+      toast.error(response.data.error);
+    }
   };
 
   const logout = () => {
@@ -379,7 +391,7 @@ const Profile = () => {
                   <br />
                   <div className="form-floating">
                     <input
-                      type="text"
+                      type="number"
                       className="form-control"
                       id="floatingPassword"
                       placeholder="New Password"

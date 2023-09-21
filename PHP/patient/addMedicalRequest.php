@@ -12,18 +12,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
 
     $startDate = $data["consultationDate"];
-    $endDate = date('Y-m-d', strtotime($startDate. ' + '.($data['duration']-1).' days'));
+    $endDate = date('Y-m-d', strtotime($startDate. ' + '.($data['duration']).' days'));
     $medicalRequest = new MedicalRequest(null, $data["patientID"], null, $data["consultationDate"], $startDate, $endDate, $data["message"], "Requested");
 
     if ($medicalRequest->createRequest()) {
         $response = array("message" => "Medical request added successfully.");
         echo json_encode($response);
     } else {
-        $response = array("message" => "Failed to add medical request.");
+        $response = array("error" => "Failed to add medical request.");
         echo json_encode($response);
     }
 } else {
-    $response = array("message" => "Invalid request method.");
+    $response = array("error" => "Invalid request method.");
     echo json_encode($response);
 }
 ?>
