@@ -136,9 +136,9 @@ const Profile = () => {
         // res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err); 
       });
-  }
+  
   };
 
   const [medicallist, setmedicallist] = useState([
