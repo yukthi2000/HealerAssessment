@@ -75,9 +75,6 @@ try {
                 throw new Exception("Sorry, there was an error uploading your photo");
             }
         }
-        else{
-            throw new Exception('No file uploaded');
-        }
     }
     elseif (isset($_POST['SpecialDisease'])) {
         $stmt = $conn->prepare("UPDATE patient SET SpecialDisease = ? WHERE Patient_ID = ?");
