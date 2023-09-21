@@ -3,18 +3,15 @@ import "./Profile.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import logo from "../../assets/logo.png";
 import FeatherIcon from "feather-icons-react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
-import farhath from "../../assets/farhath.jpg";
 import Avatar from "@mui/material/Avatar";
 import default_dp from "../../assets/default_dp.png";
 import AgeCalculator from "../doctorinterface/algorithms/AgeCalculator";
 
-
 const Profile = () => {
   const [profilepic, setprofilepic] = useState(default_dp);
-  const [specialDisease, setspecialDisease] = useState("");
   const [userdata, setuserdata] = useState([]);
   const [editedPhoneNo, setEditedPhoneNo] = useState("");
   const [editedAddress, setEditedAddress] = useState("");
@@ -27,7 +24,6 @@ const Profile = () => {
   useEffect(() => {
     fetchData();
   }, []);
-
 
   const passwordchange = () => {
     if (currpw === null && changepw === null && confirmpw === null) {
@@ -68,23 +64,23 @@ const Profile = () => {
     }
   };
   const handleProfileUpdate = () => {
-
     if (userdata[0].PhoneNo.length !== 10) {
       toast.error("Invalid Phone Number");
     } else {
-      console.log(userdata[0]);
       const formData = new FormData();
       formData.append("Patient_ID", sessionStorage.getItem("patientID"));
       formData.append("PhoneNo", userdata[0].PhoneNo);
       formData.append("Address", userdata[0].Address);
       formData.append("SpecialDisease", userdata[0].SpecialDisease);
-      formData.append("Profile", userdata[0].Profile);
-      const data = Object.fromEntries(formData);
+      editedProfilePic && formData.append("Profile", editedProfilePic);
 
+      console.log(Object.fromEntries(formData));
+
+      //have to use post method to make image upload work
       axios
-        .put(
+        .post(
           "http://localhost/HealerZ/PHP/patient/updateProfile.php",
-          data,
+          formData,
           {
             headers: {
               "Content-Type": "multipart/form-data",
@@ -92,13 +88,15 @@ const Profile = () => {
           }
         )
         .then((res) => {
-          console.log(res);
-          if (res.data === "Patient details not foundNo file uploaded") {
-            toast.error("No any Changes");
-          } else {
-            toast.success("Changes Modified");
-            // window.location.reload();
+
+          if (res.data.message) {
+            const messages = res.data.message.split(".");
+            for (const message of messages) {
+              message && toast.success(message);
+            }
           }
+
+          res.data.error && toast.error(res.data.error);
 
           // res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
         })
@@ -116,11 +114,11 @@ const Profile = () => {
     { No: 5, date: "07-11-2021" },
   ]);
 
-
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost/Healerz/PHP/patient/getPatientData.php",{params:{patientID:sessionStorage.getItem("patientID")}}
+        "http://localhost/Healerz/PHP/patient/getPatientData.php",
+        { params: { patientID: sessionStorage.getItem("patientID") } }
       );
       setuserdata(response.data);
       response.data.profilepic && setprofilepic(response.data.profilepic);
@@ -454,10 +452,6 @@ const Profile = () => {
                               style={{ width: "100%" }}
                               onChange={(e) => {
                                 setEditedProfilePic(e.target.files[0]);
-                                const tempuserdata = [...userdata];
-                                tempuserdata[0].Profile = e.target.files[0];
-                                setuserdata(tempuserdata);
-                                console.log(userdata[0]);
                               }}
                             />
                             <label htmlFor="ProfilePic">
@@ -593,7 +587,6 @@ const Profile = () => {
                       className="btn shadow gradient-button"
                       onClick={(e) => {
                         e.preventDefault();
-
                         handleProfileUpdate();
                       }}
                     >
