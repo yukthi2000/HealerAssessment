@@ -28,6 +28,8 @@ try {
 
             // Check if any data was found for the given Patient_ID
             if ($filteredData) {
+                // get 
+
                 // Return the filtered data as JSON
                 header('Content-Type: application/json');
                 echo json_encode($filteredData);
