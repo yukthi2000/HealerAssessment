@@ -405,36 +405,36 @@ const Profile = () => {
                     <input
                       type="date"
                       className="form-control"
-                      id="floatingPassword"
+                      id="Date_field"
                       name="consultationDate"
                       placeholder="New Password"
                       style={{ width: "100%" }}
                     />
-                    <label htmlFor="floatingPassword">Consulatation Date</label>
+                    <label htmlFor="Date_field">Consulatation Date</label>
                   </div>
                   <br />
                   <div className="form-floating">
                     <input
                       type="number"
                       className="form-control"
-                      id="floatingPassword"
+                      id="Duration-Days"
                       placeholder="New Password"
                       name="duration"
                       style={{ width: "100%" }}
                     />
-                    <label htmlFor="floatingPassword">Duration (In Days)</label>
+                    <label htmlFor="Duration-Days">Duration (In Days)</label>
                   </div>
                   <br />
                   <div className="form-floating">
                     <textarea
                       type="text"
                       className="form-control"
-                      id="floatingPassword"
+                      id="message"
                       placeholder="New Password"
                       name="message"
                       style={{ width: "100%" }}
                     />
-                    <label htmlFor="floatingPassword">Message</label>
+                    <label htmlFor="message">Message</label>
                   </div>
                   <hr />
                   <div className="button">
@@ -474,7 +474,7 @@ const Profile = () => {
                                 setEditedPhoneNo(e.target.value);
                               }}
                             />
-                            <label htmlFor="floatingPassword">
+                            <label htmlFor="phoneNo">
                               Change PhoneNo
                             </label>
                           </div>
@@ -483,7 +483,7 @@ const Profile = () => {
                             <textarea
                               type="text"
                               className="form-control"
-                              id="floatingPassword"
+                              id="address_field"
                               placeholder="New Password"
                               style={{ width: "100%" }}
                               value={editedAddress}
@@ -491,7 +491,7 @@ const Profile = () => {
                                 setEditedAddress(e.target.value);
                               }}
                             />
-                            <label htmlFor="floatingPassword">
+                            <label htmlFor="address_field">
                               Change Address
                             </label>
                           </div>
@@ -539,14 +539,14 @@ const Profile = () => {
                           <input
                             type="password"
                             className="form-control"
-                            id="floatingPassword"
+                            id="currentPassword"
                             placeholder="Current Password"
                             onChange={(e) => {
                               setcurrpw(e.target.value);
                             }}
                             style={{ width: "100%" }}
                           />
-                          <label htmlFor="floatingPassword">
+                          <label htmlFor="currentPassword">
                             Current Password
                           </label>
                         </div>
@@ -555,28 +555,28 @@ const Profile = () => {
                           <input
                             type="password"
                             className="form-control"
-                            id="floatingPassword"
+                            id="newPassword"
                             placeholder="New Password"
                             onChange={(e) => {
                               setchangepw(e.target.value);
                             }}
                             style={{ width: "100%" }}
                           />
-                          <label htmlFor="floatingPassword">New Password</label>
+                          <label htmlFor="newPassword">New Password</label>
                         </div>
                         <br />
                         <div className="form-floating">
                           <input
                             type="password"
                             className="form-control"
-                            id="floatingPassword"
+                            id="confirmPassword"
                             placeholder="Confirm Password"
                             onChange={(e) => {
                               setconfirmpw(e.target.value);
                             }}
                             style={{ width: "100%" }}
                           />
-                          <label htmlFor="floatingPassword">
+                          <label htmlFor="confirmPassword">
                             Confirm Password
                           </label>
                         </div>
@@ -620,7 +620,7 @@ const Profile = () => {
                           setEditedAllDiseases(e.target.value);
                         }}
                       ></textarea>
-                      <label htmlFor="floatingPassword">
+                      <label htmlFor="diseases">
                         Specific Diseases
                       </label>
                     </div>
