@@ -213,16 +213,15 @@ const Profile = () => {
     console.log(data);
     const response = await axios
       .post("http://localhost/Healerz/PHP/patient/addMedicalRequest.php", data)
+      .then((res) => {
+        console.log(res);
+        toast.success(res.data.message);
+        window.location.reload();
+      })
       .catch((err) => {
         console.log(err);
       });
     console.log(response);
-    if (response.data.message) {
-      toast.success(response.data.message);
-      window.location.reload();
-    } else {
-      toast.error(response.data.error);
-    }
   };
 
   const logout = () => {
