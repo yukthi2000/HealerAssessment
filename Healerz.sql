@@ -264,7 +264,7 @@ CREATE TABLE `patient` (
   `PatientName` varchar(30) NOT NULL,
   `DateOfBirth` date NOT NULL,
   `Gender` varchar(10) NOT NULL,
-  `PhoneNo` int(10) NOT NULL,
+  `PhoneNo` varchar(10) NOT NULL,
   `Email` varchar(30) NOT NULL,
   `Address` varchar(100) NOT NULL,
   `BloodGroup` varchar(10) NOT NULL,
