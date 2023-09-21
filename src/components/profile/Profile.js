@@ -23,10 +23,6 @@ const Profile = () => {
 
   useEffect(() => {
     fetchData();
-    console.log(userdata.map((data) => data.SpecialDisease));
-    if (userdata.map((data) => data.profile) !== null) {
-      setprofilepic(userdata.map((data) => data.SpecialDisease));
-    }
   }, []);
 
   const passwordchange = () => {
@@ -53,7 +49,6 @@ const Profile = () => {
                 console.log(res);
                 toast.success("Password Change Completed");
                 window.location.reload();
-                // res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
               })
               .catch((err) => {
                 console.log(err);
@@ -67,18 +62,23 @@ const Profile = () => {
       }
     }
   };
+
   const handleProfileUpdate = () => {
-    if (userdata[0].PhoneNo.length > 10) {
+    console.log(editedPhoneNo, editedAddress, editedProfilePic);
+    if (editedPhoneNo.length < 10 || editedPhoneNo.length > 10) {
       toast.error("Invalid Phone Number");
+    } else if (
+      userdata[0].Address == editedAddress &&
+      userdata[0].PhoneNo == editedPhoneNo &&
+      editedProfilePic == null
+    ) {
+      toast.error("No changes made");
     } else {
       const formData = new FormData();
       formData.append("Patient_ID", sessionStorage.getItem("patientID"));
-      formData.append("PhoneNo", userdata[0].PhoneNo);
-      formData.append("Address", userdata[0].Address);
-      formData.append("SpecialDisease", userdata[0].SpecialDisease);
+      formData.append("PhoneNo", editedPhoneNo);
+      formData.append("Address", editedAddress);
       editedProfilePic && formData.append("Profile", editedProfilePic);
-
-      console.log(Object.fromEntries(formData));
 
       //have to use post method to make image upload work
       axios
@@ -100,8 +100,7 @@ const Profile = () => {
           }
 
           res.data.error && toast.error(res.data.error);
-
-          // res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
+          window.location.reload();
         })
         .catch((err) => {
           console.log(err);
@@ -110,9 +109,13 @@ const Profile = () => {
   };
 
   const handleAlergyUpdate = () => {
+    if (userdata[0].SpecialDisease === editedAllDiseases) {
+      toast.error("No changes made");
+      return;
+    }
     const formData1 = new FormData();
     formData1.append("Patient_ID", sessionStorage.getItem("patientID"));
-    formData1.append("SpecialDisease", userdata[0].SpecialDisease);
+    formData1.append("SpecialDisease", editedAllDiseases);
     axios
       .post(
         "http://localhost/HealerZ/PHP/patient/updateProfile.php",
@@ -130,10 +133,8 @@ const Profile = () => {
             message && toast.success(message);
           }
         }
-
         res.data.error && toast.error(res.data.error);
-
-        // res.data.ProfilePic && setprofilepic(res.data.ProfilePic);
+        window.location.reload();
       })
       .catch((err) => {
         console.log(err);
@@ -155,11 +156,27 @@ const Profile = () => {
         { params: { patientID: sessionStorage.getItem("patientID") } }
       );
       setuserdata(response.data);
-      response.data.profilepic && setprofilepic(response.data.profilepic);
-      console.log(response.data);
+      setEditedAddress(response.data[0].Address);
+      setEditedPhoneNo(response.data[0].PhoneNo);
+      setEditedAllDiseases(response.data[0].SpecialDisease);
+
+      if (response.data[0].Profile) {
+        convertBase64ProfileImage(
+          response.data[0].Profile,
+          response.data[0].ProfileType
+        );
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
+  };
+
+  const convertBase64ProfileImage = (base64, type) => {
+    const image = new Image();
+    image.src = `data:${type};base64,${base64}`;
+    image.onload = () => {
+      setprofilepic(image.src);
+    };
   };
 
   const onPDFdownload = () => {
@@ -180,11 +197,14 @@ const Profile = () => {
   const handleAddMedicalRequest = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    console.log(formData.get("duration"), formData.get("message"));
-    if (formData.get("consultationDate") === "" || formData.get("duration") === "" || formData.get("message") === "") {
+    if (
+      formData.get("consultationDate") === "" ||
+      formData.get("duration") === "" ||
+      formData.get("message") === ""
+    ) {
       toast.error("Please fill all the fields");
       return;
-    }else if(formData.get("duration") < 0){
+    } else if (formData.get("duration") < 1) {
       toast.error("Please enter a valid duration");
       return;
     }
@@ -199,6 +219,7 @@ const Profile = () => {
     console.log(response);
     if (response.data.message) {
       toast.success(response.data.message);
+      window.location.reload();
     } else {
       toast.error(response.data.error);
     }
@@ -209,6 +230,7 @@ const Profile = () => {
     sessionStorage.setItem("patientID", null);
     sessionStorage.setItem("loginStatus", "Logged out successfully!");
   };
+
 
   return (
     <div>
@@ -263,6 +285,7 @@ const Profile = () => {
                     className="rounded-circle me-2 loginiccontt"
                     width="40px"
                     height="40px"
+                    style={{ objectFit: "cover" }}
                   />
                 </a>
               </li>
@@ -295,6 +318,7 @@ const Profile = () => {
                       className="rounded-circle me-2"
                       width="100px"
                       height="100px"
+                      style={{ objectFit: "cover" }}
                     />
                   </div>
 
@@ -440,25 +464,14 @@ const Profile = () => {
                         <div className="personalInfo">
                           <div className="form-floating">
                             <input
-                              type="number"
+                              type="text"
                               className="form-control"
-                              id="floatingPassword"
+                              id="phoneNo"
                               placeholder="New Password"
                               style={{ width: "100%" }}
-                              value={editedPhoneNo || data.PhoneNo}
+                              value={editedPhoneNo}
                               onChange={(e) => {
-                                // if (e.target.value.length > 10 ) {
-                                //   toast.error("Invalid Phone Number");
-                                // } else {
                                 setEditedPhoneNo(e.target.value);
-                                console.log(e.target.value);
-                                const updatedUserdata = [...userdata];
-                                // console.log(updatedUserdata[0]);
-                                updatedUserdata[0].PhoneNo =
-                                  e.target.value || data.PhoneNo;
-                                setuserdata(updatedUserdata);
-                                // console.log(updatedUserdata);
-                                // }
                               }}
                             />
                             <label htmlFor="floatingPassword">
@@ -473,13 +486,9 @@ const Profile = () => {
                               id="floatingPassword"
                               placeholder="New Password"
                               style={{ width: "100%" }}
-                              value={editedAddress || data.Address}
+                              value={editedAddress}
                               onChange={(e) => {
                                 setEditedAddress(e.target.value);
-                                const updatedUserdata = [...userdata];
-                                updatedUserdata[0].Address =
-                                  e.target.value || data.Address;
-                                setuserdata(updatedUserdata);
                               }}
                             />
                             <label htmlFor="floatingPassword">
@@ -510,8 +519,6 @@ const Profile = () => {
                               className="btn shadow gradient-button"
                               onClick={(e) => {
                                 e.preventDefault();
-
-                                // console.log(userdata);
                                 handleProfileUpdate();
                               }}
                             >
@@ -579,7 +586,6 @@ const Profile = () => {
                             className="btn shadow gradient-button"
                             onClick={(e) => {
                               e.preventDefault();
-
                               passwordchange();
                             }}
                           >
@@ -608,18 +614,10 @@ const Profile = () => {
                         className="form-control"
                         id="diseases"
                         placeholder="Confirm Password"
-                        value={
-                          userdata.map((data) => data.SpecialDisease) ||
-                          editedAllDiseases
-                        }
+                        value={editedAllDiseases}
                         rows={7}
                         onChange={(e) => {
                           setEditedAllDiseases(e.target.value);
-                          const updatedUserdata = [...userdata];
-                          updatedUserdata[0].SpecialDisease =
-                            e.target.value || data.SpecialDisease;
-
-                          setuserdata(updatedUserdata);
                         }}
                       ></textarea>
                       <label htmlFor="floatingPassword">
